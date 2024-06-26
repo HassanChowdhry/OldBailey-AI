@@ -1,4 +1,4 @@
-# Old Bailey AI Projects
+# Old Bailey AI
 
 Welcome to the Old Bailey AI Projects repository! This is a collection of projects focused on leveraging artificial intelligence to analyze and understand the historical records of the Old Bailey, the central criminal court of England and Wales.
 
