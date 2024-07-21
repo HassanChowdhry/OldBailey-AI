@@ -19,7 +19,7 @@ const ChatInput = () => {
 
         <Button
           variant="default"
-          className="rounded-full hover:bg-white-2 text-black-1"
+          className="rounded-full hover:bg-white-2 text-black-1 disabled:bg-text-white-3"
         >
           <IoIosSend size={20} />
         </Button>

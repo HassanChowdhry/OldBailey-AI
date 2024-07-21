@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet"
 
  
-export function LeftSheet() {
+export default function LeftSheet() {
   return (
     <div className="left_sidebar">
         
