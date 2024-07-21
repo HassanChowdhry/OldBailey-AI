@@ -4,8 +4,7 @@ import { IoIosSend } from "react-icons/io";
 
 const ChatInput = () => {
   return (
-    //TODO: change the absolute
-    <div className="flex-center flex-col absolute bottom-0 w-full pb-4">
+    <div className="flex-center flex-col bottom-0 w-full pb-4">
       <section
         className="flex flex-1 justify-end items-end gap-2 max-w-[780px] bg-maroon-2 py-2 px-3 rounded-[26px]"
       >
@@ -20,7 +19,7 @@ const ChatInput = () => {
 
         <Button
           variant="default"
-          className="rounded-full hover:bg-white-2"
+          className="rounded-full hover:bg-white-2 text-black-1"
         >
           <IoIosSend size={20} />
         </Button>
