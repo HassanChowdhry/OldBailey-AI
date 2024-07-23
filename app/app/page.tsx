@@ -1,92 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import ChatHeader from "@/components/ChatHeader";
+import ChatHeader, { gptModels } from "@/components/ChatHeader";
 import ChatInput from "@/components/ChatInput";
 import ChatMessage from "@/components/ChatMessage";
 import ChatStatus from "@/components/ChatStatus";
 import useThread from "@/hooks/useThread";
 import LeftSheet from "@/components/LeftSheet";
 import { Run } from "@/hooks/useThread";
-import * as api from "../hooks/api";
-import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function Home() {
   const [run, setRun] = useState<Run | null>(null)
   const [status, setStatus] = useState<string>("")
   const [processing, setProcessing] = useState<boolean>(false)
   const [threadId, setThreadId] = useState<string>('') 
-  const { toast } = useToast();
+  const [gptModel, setGptModel] = useState<string>(gptModels[0])
   
-  const { messages, clearThread } = useThread(run, setRun, setProcessing, setStatus, threadId, setThreadId);
+  const { messages, clearThread, sendMessage } = useThread(run, setRun, setProcessing, setStatus, threadId, setThreadId);
 
   const messageList = messages
-    .toReversed()
     .filter((message) => message.hidden !== true)
     .map((message) => <ChatMessage key={message.id} message={message.content} role={message.role} />)
-  
-  const createThread = async () => {
-    try {
-      const thread_id = await api.createNewThread();
-      setThreadId(thread_id);
-      return thread_id;
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Error creating thread",
-        variant: "destructive",
-      });
-    }
-  }
-  const sendMessage = async (message: string) => {
-    setStatus("Running...")
-    setProcessing(true)
-    let thread_id = threadId;
-
-    if (!thread_id) {
-      thread_id = await createThread();
-    }
-
-    try {
-      if (thread_id) {
-        const run = await api.postMessage(thread_id, message);
-        setRun(run);
-        toast({
-          title: "Message sent",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Error sending message",
-        variant: "destructive",
-      });
-    }
-
-    setStatus("");
-    setProcessing(false);
-  };
 
   return (
     <main className="flex min-h-screen w-full">
       <LeftSheet 
         clearThread={clearThread}
+        disabled={!threadId}
       />
       
-      <section className="flex flex-1 flex-col w-full text-center text-white-1">
-        <header className="max-h-[75px] p-5">
-          <ChatHeader />
-        </header>
+      <section className=" text-white-1 w-full md:mx-auto h-screen flex flex-col">
+        <ChatHeader setGptModel={setGptModel} />
 
-        <div className="flex flex-col-reverse grow overflow-scroll pb-4">
-            {status && (
-                <ChatStatus status={status} />
-            )}
+        <ScrollArea className="h-screen w-full">
+          <div className="flex w-[715px] mx-auto flex-col grow pb-4">
               {messageList}
-        </div>
+          </div>
+        </ScrollArea>
 
+        {status && <ChatStatus status={status} />}
         <ChatInput 
-          onSend={(message) => sendMessage(message)}
+          onSend={(message) => sendMessage(message, gptModel)}
           disabled={processing}
         />
       </section>

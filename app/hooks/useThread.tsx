@@ -1,5 +1,7 @@
 import { useState, useEffect, SetStateAction, Dispatch } from "react"
 import { fetchThread, runStates } from "./api"
+import { useToast } from "@/components/ui/use-toast";
+import * as api from "../hooks/api";
 
 export interface Thread {
   thread_id: string;
@@ -25,14 +27,16 @@ export default function useThread(
     setProcessing: (processing: boolean) => void, 
     setStatus: (status: string) => void,
     threadId: string,
-    setThreadId: Dispatch<SetStateAction<string>>) {
-
+    setThreadId: Dispatch<SetStateAction<string>>) 
+  {
+  
+  const { toast } = useToast();
   const [thread, setThread] = useState<Thread | null>();
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     if (!threadId) {
-      const storedThreadId = localStorage.getItem("thread_id");
+      const storedThreadId = sessionStorage.getItem("thread_id");
       if (storedThreadId) {
         setThreadId(storedThreadId);
         fetchThread(storedThreadId).then(setThread);
@@ -63,15 +67,64 @@ export default function useThread(
   const clearThread = () => {
     setStatus('');
     setProcessing(false);
-    localStorage.removeItem("thread_id");
+    sessionStorage.removeItem("thread_id");
     setThreadId('');
     setThread(null);
     setMessages([]);
+    toast({
+      title: "New Chat Created"
+    })
+  };
+
+  const createThread = async () => {
+    try {
+      const thread_id = await api.createNewThread();
+      setThreadId(thread_id);
+      sessionStorage.setItem("thread_id", thread_id);
+      return thread_id;
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error creating thread",
+        variant: "destructive",
+      });
+    }
+  }
+
+  const sendMessage = async (message: string, gptModel: string) => {
+    setStatus("Running...")
+    setProcessing(true)
+    let thread_id = threadId;
+
+    if (!thread_id) {
+      thread_id = await createThread();
+    }
+
+    try {
+      if (thread_id) {
+        const run = await api.postMessage(thread_id, message, gptModel);
+        setRun(run);
+        toast({
+          title: "Message sent",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error sending message",
+        variant: "destructive",
+      });
+    }
+
+    setStatus("");
+    setProcessing(false);
   };
 
   return { 
     threadId, 
     messages, 
     clearThread,
+    createThread,
+    sendMessage,
   };
 }

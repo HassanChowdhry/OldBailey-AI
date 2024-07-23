@@ -17,11 +17,11 @@ export default function ChatMessage({ message, role }: ChatMessageProps) {
           <div className="rounded-full h-8 w-8 bg-slate-600 flex items-center justify-center font-semibold shrink-0">
             {isUser ? (<FaRegUser />) : (<FaBold />)}
           </div>
-            <p className="font-bold my-auto text-[20px] text-secondary">
+            <p className="font-bold my-auto text-18 text-secondary">
               {isUser ? ("You") : ("Old Bailey")}
             </p>
           </section>
-          <div className="ml-8 flex-col bg-card rounded-3xl py-3 px-5">
+          <div className="ml-5 flex-col bg-card rounded-3xl py-3 px-5">
               <Markdown
                   className="text-white-100 markdown"
                   remarkPlugins={[remarkGfm]}

@@ -28,7 +28,7 @@ export const fetchThread = async (threadId: string) => {
   }
 }
 
-export const postMessage = async (threadId: string, message: string) => {
+export const postMessage = async (threadId: string, message: string, gptModel: string) => {
   if (!threadId || !message) {
     throw new Error("threadId and message are required")
   }
@@ -38,7 +38,10 @@ export const postMessage = async (threadId: string, message: string) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ content: message }),
+      body: JSON.stringify({ 
+        content: message,
+        model: gptModel,
+      }),
     })
     const data = await res.json()
     return data

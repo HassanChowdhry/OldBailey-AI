@@ -4,12 +4,11 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 
-const gptModels: string[] = [
+export const gptModels: string[] = [
   "gpt-3.5-turbo",
   "gpt-3.5-turbo-0125",
   "gpt-3.5-turbo-1106",
@@ -20,15 +19,19 @@ const gptModels: string[] = [
   "gpt-4",
 ]
 
-const ChatHeader = () => {
+type ChatHeaderProps = {
+  setGptModel: (model: string) => void
+}
+const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
+  
   return (
-    <section className="flex justify-between">
+    <section className="flex justify-between max-h-[75px] p-5">
       <div className="flex gap-5">
         <h1 className="my-auto text-white-1 font-bold text-2xl min-w-max">
           Old Bailey AI
         </h1>
 
-        <Select>
+        <Select onValueChange={(e) => {setGptModel(e)}} defaultValue={gptModels[0]}>
           <SelectTrigger 
             className="border-none w-auto p-2 transition-all duration-500 hover:bg-gray-1/30 text-[16px] text-white-5"
           >

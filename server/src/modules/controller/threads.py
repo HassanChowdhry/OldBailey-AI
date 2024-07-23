@@ -3,13 +3,15 @@ from dotenv import load_dotenv
 load_dotenv()
 from flask import (
   Blueprint,
-  Response,
   jsonify,
   request,
 )
+from typing import Dict
+import json
 from openai import OpenAI
 from .registry import *
 from modules.models import *
+import modules.services.ngramsapi as ngrams
 
 threads = Blueprint('threads', __name__)
 
@@ -20,11 +22,8 @@ assistant_id = os.getenv("OPENAI_ASSISTANT_ID")
 def post_new_thread():
   # try catch ?
   thread = client.beta.threads.create()
-  return Response(
-    response=thread.id,
-    status=201,
-    mimetype="application/json"
-  )
+  thread_id = jsonify(thread.id)
+  return thread_id, 201
   
 @threads.route("/threads/<thread_id>", methods=['GET'])
 def get_thread(thread_id):
@@ -46,7 +45,8 @@ def get_thread(thread_id):
 
 @threads.route("/threads/<thread_id>", methods=['POST'])
 def post_message_in_thread(thread_id):
-  message = CreateMessage(content=request.json['message'])
+  message = CreateMessage(content=request.json['content'])
+  model = request.json['model']
   
   client.beta.threads.messages.create(
     thread_id=thread_id,
@@ -56,15 +56,46 @@ def post_message_in_thread(thread_id):
   
   run = client.beta.threads.runs.create_and_poll(
     thread_id=thread_id,
-    assistant_id=assistant_id
+    assistant_id=assistant_id,
+    model=model
   )
+
+  if run.status == 'requires_action':
+    run = __usengrams(run, thread_id)
   
   run_status = RunStatus(
     run_id=run.id,
     thread_id=thread_id,
     status=run.status,
-    last_error=run.last_error,
-    required_action=run.required_action
   )
   
   return jsonify(run_status.model_dump())
+
+
+def __usengrams(run, thread_id):
+  tool_outputs = []
+ 
+  for tool in run.required_action.submit_tool_outputs.tool_calls:
+    args = __args_to_dict(tool.function.arguments)
+    res = ngrams.get_word_trends(**args)
+
+    if tool.function.name == "get_word_trends":
+      tool_outputs.append({
+        "tool_call_id": tool.id,
+        "output": res
+      })
+  
+  if tool_outputs:
+    try:
+      run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+        thread_id=thread_id,
+        run_id=run.id,
+        tool_outputs=tool_outputs
+      )
+    except Exception as e:
+      raise e
+  
+  return run
+
+def __args_to_dict(tool: str) -> Dict[str, str]:
+  return json.loads(tool)

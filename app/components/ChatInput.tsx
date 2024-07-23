@@ -11,7 +11,7 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   const [message, setMessage] = useState<string>("")
 
   return (
-    <div className="flex-center flex-col bottom-0 w-full pb-4">
+    <div className="flex-center flex-col bottom-0 w-full py-4">
       <form
         className="flex flex-1 justify-end items-end gap-2 max-w-[780px] bg-maroon-2 py-2 px-3 rounded-[26px]"
         onSubmit={(e) => {
