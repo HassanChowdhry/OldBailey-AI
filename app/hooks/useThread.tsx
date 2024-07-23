@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { createNewThread, fetchThread, runStates } from "./api"
+import { useState, useEffect, SetStateAction, Dispatch } from "react"
+import { fetchThread, runStates } from "./api"
 
 export interface Thread {
   thread_id: string;
@@ -7,6 +7,9 @@ export interface Thread {
 }
 
 export interface Message {
+  id: string;
+  content: string;
+  role: string;
   created_at: number;
   hidden?: boolean;
 }
@@ -16,9 +19,15 @@ export interface Run {
   status: string;
 }
 
-export default function useThread(run: Run | null, setRun: (run: Run | null) => void, setProcessing: (processing: boolean) => void, setStatus: (status: string) => void) {
-  const [threadId, setThreadId] = useState<string>("");
-  const [thread, setThread] = useState<Thread | null>(null);
+export default function useThread(
+    run: Run | null, 
+    setRun: Dispatch<SetStateAction<Run | null>>, 
+    setProcessing: (processing: boolean) => void, 
+    setStatus: (status: string) => void,
+    threadId: string,
+    setThreadId: Dispatch<SetStateAction<string>>) {
+
+  const [thread, setThread] = useState<Thread | null>();
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
@@ -27,12 +36,6 @@ export default function useThread(run: Run | null, setRun: (run: Run | null) => 
       if (storedThreadId) {
         setThreadId(storedThreadId);
         fetchThread(storedThreadId).then(setThread);
-      } else {
-        createNewThread().then((data: Run) => {
-          setRun(data);
-          setThreadId(data.thread_id);
-          localStorage.setItem("thread_id", data.thread_id);
-        });
       }
     }
   }, [threadId, setThreadId, setThread, setRun]);
@@ -51,17 +54,17 @@ export default function useThread(run: Run | null, setRun: (run: Run | null) => 
     if (!thread) {
       return;
     }
-    let newMessages = [...thread.messages]
+    const newMessages = [...thread.messages]
       .sort((a, b) => a.created_at - b.created_at)
       .filter((message) => message.hidden !== true);
     setMessages(newMessages);
   }, [thread, setMessages]);
 
   const clearThread = () => {
-    setStatus("Processing...");
-    setProcessing(true);
+    setStatus('');
+    setProcessing(false);
     localStorage.removeItem("thread_id");
-    setThreadId("");
+    setThreadId('');
     setThread(null);
     setMessages([]);
   };
