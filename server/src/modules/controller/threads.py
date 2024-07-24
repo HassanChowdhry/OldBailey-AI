@@ -28,16 +28,16 @@ def post_new_thread():
 @threads.route("/threads/<thread_id>", methods=['GET'])
 def get_thread(thread_id):
   messages = client.beta.threads.messages.list(thread_id=thread_id)
-  
   res = [
     ThreadMessage(
-      content=message.content[0].text.value,
-      role=message.role,
-      hidden="type" in message.metadata and message.metadata["type"] == "hidden",
-      id=message.id,
-      created_at=message.created_at
+        content=message.content[0].text.value,    
+        role=message.role,
+        hidden="type" in message.metadata and message.metadata["type"] == "hidden",
+        id=message.id,
+        created_at=message.created_at
     )
     for message in messages.data
+    if hasattr(message.content[0], 'text') and message.content[0].text.value.strip()
   ]
   
   thread = Thread(messages=res)
