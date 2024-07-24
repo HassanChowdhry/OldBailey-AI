@@ -27,10 +27,6 @@ const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
   return (
     <section className="flex justify-between max-h-[75px] p-5">
       <div className="flex gap-5">
-        <h1 className="my-auto text-white-1 font-bold text-2xl min-w-max">
-          Old Bailey AI
-        </h1>
-
         <Select onValueChange={(e) => {setGptModel(e)}} defaultValue={gptModels[0]}>
           <SelectTrigger 
             className="border-none w-auto p-2 transition-all duration-500 hover:bg-gray-1/30 text-[16px] text-white-5"

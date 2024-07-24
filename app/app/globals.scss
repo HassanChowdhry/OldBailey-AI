@@ -22,7 +22,7 @@ html {
     @apply text-16 placeholder:text-16 bg-black-1 rounded-[6px] placeholder:text-gray-1 border-none text-white-1;
   }
   .left_sidebar {
-    @apply sticky left-0 top-0 flex w-fit flex-col justify-between border-none  bg-maroon-3 pt-8 text-white-1 max-md:hidden lg:w-[270px];
+    @apply sticky left-0 top-0 flex w-fit flex-col justify-between border-none bg-maroon-3 pt-5 text-white-1 max-md:hidden lg:w-[270px];
   }
   .button_bold-16 {
     @apply text-16 font-bold text-white-1 transition-all duration-500;

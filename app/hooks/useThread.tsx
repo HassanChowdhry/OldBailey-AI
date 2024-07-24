@@ -115,7 +115,6 @@ export default function useThread(
         variant: "destructive",
       });
     }
-
     setStatus("");
     setProcessing(false);
   };

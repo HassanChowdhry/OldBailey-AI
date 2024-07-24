@@ -38,6 +38,11 @@
     list-style-type: decimal;
     margin-left: 1rem;
   }
+
+  li {
+    margin-bottom: 10px;
+  }
+
   pre {
     overflow: auto;
     border: 1px solid $maroon-1;
@@ -45,3 +50,4 @@
     border-radius: 10px;
   }
 }
+
