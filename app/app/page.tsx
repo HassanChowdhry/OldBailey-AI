@@ -34,7 +34,7 @@ export default function Home() {
         <ChatHeader setGptModel={setGptModel} />
 
         <ScrollArea className="h-screen w-full">
-          <div className="flex w-[715px] mx-auto flex-col grow pb-4">
+          <div className="flex w-[800px] mx-auto flex-col grow pb-4">
               {messageList}
           </div>
         </ScrollArea>
