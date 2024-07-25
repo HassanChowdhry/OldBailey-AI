@@ -57,12 +57,12 @@ export default function LeftSheet({ clearThread, disabled } : LeftSheetProps) {
 const Logo = () => {
   return (
     <div
-      className="font-normal flex space-x-2 items-center text-sm relative z-20"
+      className="font-normal flex space-x-2 px-2 items-center text-sm relative z-20"
     >
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-bold text-xl whitespace-pre"
+        className="font-bold text-2xl whitespace-pre"
       >
         Old Bailey
       </motion.span>

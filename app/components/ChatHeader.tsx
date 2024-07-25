@@ -13,10 +13,10 @@ export const gptModels: string[] = [
   "gpt-3.5-turbo-0125",
   "gpt-3.5-turbo-1106",
   "gpt-3.5-turbo-16k",
-  "gpt-4o-mini",
-  "gpt-4o",
-  "gpt-4-turbo",
-  "gpt-4",
+  // "gpt-4o-mini",
+  // "gpt-4o",
+  // "gpt-4-turbo",
+  // "gpt-4",
 ]
 
 type ChatHeaderProps = {

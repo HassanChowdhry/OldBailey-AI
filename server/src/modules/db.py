@@ -1,22 +1,22 @@
-import bson
-from flask import current_app, g
-from werkzeug.local import LocalProxy
-from flask_pymongo import PyMongo
-from pymongo.errors import DuplicateKeyError, OperationFailure
-from bson.objectid import ObjectId
-from bson.errors import InvalidId
-
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from dotenv import load_dotenv
+import os
+load_dotenv()   
 
 def get_db():
     """
-    Configuration method to return db instance
+    Configuration method to return collection
     """
-    db = getattr(g, "_database", None)
+    uri = os.getenv("MONGO_URI_LOCAL")
 
-    if db is None:
-
-        db = g._database = PyMongo(current_app).db
-       
-    return db
-
-# db = LocalProxy(get_db)
+    client = MongoClient(uri)
+    
+    db = client['oldbailey']
+    
+    users = db['users'] 
+    threads = db['threads']
+    
+    return users, threads
+    
+users, threads = get_db()

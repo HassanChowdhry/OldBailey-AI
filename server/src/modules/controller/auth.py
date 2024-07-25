@@ -1,3 +1,4 @@
+import modules.services.database as user_service
 from flask import (
   Blueprint,
   request,
@@ -24,4 +25,7 @@ def register():
 
 @auth.route('/verify', methods=['POST'])
 def verify():
-  pass
+  email = request.json['email']
+  user_service.find_user_by_email(email)
+  return jsonify("hello"), 200
+  # return res

@@ -33,7 +33,6 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-
   const messageList = messages
     .filter((message) => message.hidden !== true)
     .map((message) => <ChatMessage key={message.id} message={message.content} role={message.role} />)
