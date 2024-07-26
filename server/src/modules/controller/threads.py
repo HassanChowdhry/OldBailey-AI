@@ -41,7 +41,7 @@ def get_thread(thread_id):
   ]
   
   thread = Thread(messages=res)
-  return jsonify(thread.model_dump())
+  return jsonify(thread.model_dump()), 200
 
 @threads.route("/threads/<thread_id>", methods=['POST'])
 def post_message_in_thread(thread_id):
@@ -69,7 +69,7 @@ def post_message_in_thread(thread_id):
     status=run.status,
   )
   
-  return jsonify(run_status.model_dump())
+  return jsonify(run_status.model_dump()), 201
 
 
 def __usengrams(run, thread_id):

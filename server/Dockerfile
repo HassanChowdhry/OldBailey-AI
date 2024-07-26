@@ -5,11 +5,11 @@ RUN apk add py-pip
 RUN apk add --no-cache python3-dev 
 RUN pip install --upgrade pip
 
-COPY ./requirements.txt /app/requirements.txt
+COPY ./requirements.txt /src/requirements.txt
 
-WORKDIR /app
+WORKDIR /src
 
-COPY . /app
+COPY . /src
 
 RUN pip --no-cache-dir install -r requirements.txt
-CMD ["python3", "app.py"]
+CMD ["python3", "run.py"]

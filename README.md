@@ -4,12 +4,15 @@ OldBailey AI is a project developed to assist researchers and historians by prov
 
 ## Table of Contents
 
-- [About](#about)
-- [Technologies Used](#technologies-used)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contact](#contact)
+- [OldBailey AI](#oldbailey-ai)
+  - [Table of Contents](#table-of-contents)
+  - [About](#about)
+  - [Technologies Used](#technologies-used)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Contact](#contact)
+  - [References](#references)
 
 ## About
 
@@ -45,18 +48,45 @@ OldBailey AI is designed to enhance historical research by offering advanced dat
 To run this project locally, follow these steps:
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/HassanChowdhry/OldBailey-AI.git
    ```
 
 2. Navigate to the project directory:
+
    ```bash
-   cd oldbailey-ai
+   cd app
    ```
 
 3. Install the dependencies:
+
    ```bash
    npm install
+   ```
+
+4. Create a virtual environment:
+
+   ```bash
+   python3 -m venv venv
+   ```
+
+5. Activate the virtual environment:
+
+   ```bash
+   source venv/bin/activate
+   ```
+
+6. Install the Python dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+7. Start the development server:
+
+   ```bash
+   python3 run.py
    ```
 
 ## Usage
@@ -70,6 +100,10 @@ Feel free to reach out to me for any professional inquiries or questions:
 - **Email:** [hassan.chowdhry@dal.ca](mailto:hassan.chowdhry@dal.ca)
 - **LinkedIn:** [Hassan Chowdhry](https://linkedin.com/in/hassanchowdhry)
 - **Website:** [HassanChowdhry.live](http://hassanchowdhry.live)
+
+## References
+
+Tim Hitchcock, Robert Shoemaker, Clive Emsley, Sharon Howard and Jamie McLaughlin, et al., The Old Bailey Proceedings Online, 1674-1913 ([www.oldbaileyonline.org](www.oldbaileyonline.org), version 9.0, Autumn 2023).
 
 ---
 

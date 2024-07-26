@@ -12,6 +12,5 @@ class User(BaseModel):
   last_name: str
   email: str
   phone_number: int
-  created_at: int
-  threads: List[UserThread]
+  threads: List[UserThread] = []
 
