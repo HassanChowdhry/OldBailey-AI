@@ -9,7 +9,7 @@ JWT_SECRET_KEY = os.getenv('SECRET_KEY') or 'my_precious'
 def create_tokens(email: str, refresh: bool = False):
   now = datetime.datetime.now(datetime.timezone.utc)
   payload = {
-    'exp': now + datetime.timedelta(minutes=1),
+    'exp': now + datetime.timedelta(minutes=45),
     'iat': now,
     'sub': email
   }
