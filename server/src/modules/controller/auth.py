@@ -6,11 +6,13 @@ from flask import (
   jsonify,
   make_response
 )
-import jwt
 
 auth = Blueprint('auth', __name__)
 
-# jwt token, bcrypt/sha1 password hashing, email verification?
+# TODO: 
+# Add Password Reset
+# Add Email Verification
+# Add password encryption from the frontend to the backend using jwt
 
 @auth.route('/login', methods=['POST'])
 def login():
@@ -51,11 +53,10 @@ def logout():
   response = make_response(jsonify({
     'message': 'Logged out successfully'
   }), 200)
-  response.set_cookie('access_token', '', httponly=True, secure=True, samesite='Lax', max_age=0)
-  response.set_cookie('refresh_token', '', httponly=True, secure=True, samesite='Lax', max_age=0)
+  response.delete_cookie('access_token', '', httponly=True, secure=True, samesite='Lax')
+  response.delete_cookie('refresh_token', '', httponly=True, secure=True, samesite='Lax')
   return response
 
-# Email verification
 @auth.route('/register', methods=['POST'])
 def register():
   try:
