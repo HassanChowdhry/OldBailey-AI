@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ChatHeader, { gptModels } from "@/components/ChatHeader";
 import ChatInput from "@/components/ChatInput";
 import ChatMessage from "@/components/ChatMessage";
@@ -18,6 +18,20 @@ export default function Home() {
   const [gptModel, setGptModel] = useState<string>(gptModels[0])
   
   const { messages, clearThread, sendMessage } = useThread(run, setRun, setProcessing, setStatus, threadId, setThreadId);
+  
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    if (scrollViewportRef.current) {
+      setTimeout(() => {
+        scrollViewportRef.current?.scrollIntoView({ block: "end", behavior: 'smooth' });
+      }, 500);
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const messageList = messages
     .filter((message) => message.hidden !== true)
@@ -34,14 +48,17 @@ export default function Home() {
         <ChatHeader setGptModel={setGptModel} />
 
         <ScrollArea className="h-screen w-full">
-          <div className="flex w-[715px] mx-auto flex-col grow pb-4">
+          <div ref={scrollViewportRef} className="flex w-[800px] mx-auto flex-col grow pb-4">
               {messageList}
           </div>
         </ScrollArea>
 
         {status && <ChatStatus status={status} />}
         <ChatInput 
-          onSend={(message) => sendMessage(message, gptModel)}
+          onSend={async (message) => {
+            await sendMessage(message, gptModel)
+            scrollToBottom()
+          }}
           disabled={processing}
         />
       </section>

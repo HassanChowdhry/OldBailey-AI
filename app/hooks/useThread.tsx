@@ -1,7 +1,7 @@
 import { useState, useEffect, SetStateAction, Dispatch } from "react"
 import { fetchThread, runStates } from "./api"
 import { useToast } from "@/components/ui/use-toast";
-import * as api from "../hooks/api";
+import * as api from "./api";
 
 export interface Thread {
   thread_id: string;
@@ -115,7 +115,6 @@ export default function useThread(
         variant: "destructive",
       });
     }
-
     setStatus("");
     setProcessing(false);
   };

@@ -7,14 +7,19 @@ class RunStatus(BaseModel):
   status: str
   
 class ThreadMessage(BaseModel):
+  id: str
   content: str
   role: str
   hidden: bool
-  id: str
   created_at: int
 
 class Thread(BaseModel):
-    messages: List[ThreadMessage]
+  thread_id: str
+  title: str
+  content: str
+  user_id: str
+  created_at: int
+  messages: List[ThreadMessage]
 
 class CreateMessage(BaseModel):
   content: str

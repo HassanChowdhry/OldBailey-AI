@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": "user1",
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john.doe@example.com",
+      "phone_number": "1234567890",
+      "password": "hashed_password",
+      "threads": [
+        {
+          "thread_id": "thread1",
+          "thread_title": "Thread Title 1",
+          "created_at": "1721948927"
+        }
+      ]
+    }
+  ],
+
+  "threads": [
+    {
+      "thread_id": "thread1",
+      "user_id": "user1",
+      "thread_title": "Thread Title 1",
+      "created_at": "1721948927",
+      "messages": [
+        {
+          "message_id": "message1",
+          "content": "Message Content 1",
+          "created_at": "1721948929",
+          "role": "user"
+        }
+      ]
+    }
+  ]
+}  
