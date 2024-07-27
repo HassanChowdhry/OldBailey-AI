@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import datetime
 
-JWT_SECRET_KEY = os.getenv('SECRET_KEY') or 'my_precious'
+JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 def create_tokens(email: str, refresh: bool = False):
   now = datetime.datetime.now(datetime.timezone.utc)

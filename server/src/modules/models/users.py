@@ -7,7 +7,7 @@ class UserThread(BaseModel):
   created_at: int
   
 class User(BaseModel):
-  id: str
+  user_id: str
   first_name: str
   last_name: str
   email: str
