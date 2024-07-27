@@ -4,7 +4,7 @@ from flask import (
   Blueprint,
   request,
   jsonify,
-  g
+  make_response
 )
 import jwt
 
@@ -45,14 +45,14 @@ def login():
 def logout():
   pass
 
-# TODO: Implement email verification + tokens
+# Email verification
 @auth.route('/register', methods=['POST'])
 def register():
   try:
     data = request.json
+    email = data.get('email')
     first_name = data.get('first_name')
     last_name = data.get('last_name')
-    email = data.get('email')
     phone_number = data.get('phone_number')
     password = data.get('password')
 
@@ -62,40 +62,61 @@ def register():
     if users_service.find_user_by_email(email):
       return jsonify({'error': 'User already exists'}), 400
     
-    user = users_service.create_user(
-            first_name, 
-            last_name, 
-            email, 
-            phone_number, 
-            password
-          )
+    access_token, refresh_token = auth_service.create_tokens(email)
     
-    access_token = auth_service.create_token(email, minutes=45)
-    refresh_token = auth_service.create_token(email, days=7)
-    return jsonify({
-        'access_token': access_token,
-        'refresh_token': refresh_token, # perhaps set in cookies?
-        'user': user.model_dump()
-      }), 201
+    user = users_service.create_user(
+      first_name, 
+      last_name, 
+      email, 
+      phone_number, 
+      password
+    )
+    
+    response = make_response(jsonify({
+      'user': user.model_dump()
+    }), 201)
+
+    # Set cookies
+    fortyfive_minutes = 45*60
+    seven_days = 7*24*60*60
+    response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='Lax', max_age=fortyfive_minutes)
+    response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, samesite='Lax', max_age=seven_days)
+
+    return response
     
   except Exception as e:
     return jsonify({'error': str(e)}), 400
 
-# TODO: implement refresh for tokens
 @auth.route('/verify', methods=['POST'])
 def verify():
-  auth_token = request.headers.get('Authorization')
-  if not auth_token:
-    return jsonify({'error': 'No token provided'}), 401
-  
-  auth_token = auth_token.split(' ')[1]
-  email = auth_service.decode_auth_token(auth_token)
-  
-  if email in ['Signature expired. Please log in again.', 'Invalid token. Please log in again.']:
-    return jsonify({'error': email}), 401
-  
-  user = users_service.find_user_by_email(email)
-  if user:
-    return jsonify({'message': 'User verified'}), 200
-  else:
-    return jsonify({'error': 'User not found'}), 404
+  try:
+    access_token = request.cookies.get('access_token')
+    if not access_token:
+      return jsonify({'error': 'Invalid Token, please log in'}), 401
+    
+    refresh_token = request.cookies.get('refresh_token')
+    if not refresh_token:
+      return jsonify({'error': 'Invalid refresh token, please log in'}), 401
+
+    email, access_token = auth_service.decode_auth_token(access_token, refresh_token)
+    
+    if email in ['Signature expired. Please log in again.', 'Invalid token. Please log in again.']:
+      return jsonify({'error': email}), 401
+    
+    user = users_service.find_user_by_email(email)
+    
+    if user:
+      response = make_response(jsonify({
+        'user': user.model_dump()
+      }), 200)
+      
+      fortyfive_minutes = 45*60
+      seven_days = 7*24*60*60
+      response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='Lax', max_age=fortyfive_minutes)
+      response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, samesite='Lax', max_age=seven_days)
+
+      return response
+    else:
+      return jsonify({'error': 'User not found'}), 404
+  except Exception as e:
+    return jsonify({'error': str(e)}), 400
