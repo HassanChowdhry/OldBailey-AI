@@ -104,9 +104,6 @@ export default function useThread(
       if (thread_id) {
         const run = await api.postMessage(thread_id, message, gptModel);
         setRun(run);
-        toast({
-          title: "Message sent",
-        });
       }
     } catch (err) {
       console.error(err);
