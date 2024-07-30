@@ -28,15 +28,14 @@ def register_middlewares(app):
   
   @app.before_request
   def auth_guard():
-
-    if request.blueprint == 'auth':
+    if request.blueprint == 'auth' and request.url_rule.rule != '/v1/auth/verify':
       return
 
     access_token = request.cookies.get('access_token')
     refresh_token = request.cookies.get('refresh_token')
     
     if not access_token or not refresh_token:
-      raise abort(401)
+      raise abort(401, 'Unauthorized')
     
     try:
       payload = jwt.decode(access_token, JWT_SECRET_KEY, algorithms=['HS256'])
@@ -46,5 +45,5 @@ def register_middlewares(app):
         payload = jwt.decode(refresh_token, JWT_SECRET_KEY, algorithms=['HS256'])
         g.user = payload['sub']
       except Exception as e:
-        raise abort(401)
+        raise abort(401, e)
     

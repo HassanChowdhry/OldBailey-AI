@@ -8,7 +8,7 @@ def create_app():
   CORS(app)
   
   register_middlewares(app)
-  app.register_blueprint(threads, url_prefix="/api")
-  app.register_blueprint(auth, url_prefix="/auth")
+  app.register_blueprint(threads, url_prefix="/v1")
+  app.register_blueprint(auth, url_prefix="/v1")
         
   return app

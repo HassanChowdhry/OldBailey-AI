@@ -15,7 +15,7 @@ auth = Blueprint('auth', __name__)
 # Add Email Verification
 # Add password encryption from the frontend to the backend using jwt
 
-@auth.route('/login', methods=['POST'])
+@auth.route('/auth/login', methods=['POST'])
 def login():
   data = request.get_json()
   email = data.get('email')
@@ -40,7 +40,7 @@ def login():
   return response
   
 
-@auth.route('/signup', methods=['POST'])
+@auth.route('/auth/signup', methods=['POST'])
 def register():
   data = request.json
   email = data.get('email')
@@ -73,7 +73,7 @@ def register():
   return response
 
 # Move to a different controller or middleware
-@auth.route('/verify', methods=['POST'])
+@auth.route('/auth/verify', methods=['POST'])
 def verify():
   email = g.user
   user = users_service.find_user_by_email(email)
