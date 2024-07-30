@@ -18,9 +18,12 @@ threads = Blueprint('threads', __name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 assistant_id = os.getenv("OPENAI_ASSISTANT_ID")
 
-@threads.route(THREADS_BASE_URL, methods=['POST'])
+@threads.route('/test', methods=['GET'])
+def test():
+  return jsonify({"message": "Hello World"}), 200
+
+@threads.route('/threads', methods=['POST'])
 def post_new_thread():
-  # try catch ?
   thread = client.beta.threads.create()
   thread_id = jsonify(thread.id)
   return thread_id, 201
@@ -70,7 +73,6 @@ def post_message_in_thread(thread_id):
   )
   
   return jsonify(run_status.model_dump()), 201
-
 
 def __usengrams(run, thread_id):
   tool_outputs = []
