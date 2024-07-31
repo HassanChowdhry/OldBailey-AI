@@ -4,7 +4,7 @@ import { useState, useContext } from "react";
 import { UserContext } from "@/context/UserContext";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { signup, SignupData  } from "@/hooks/auth";
+import { signup, SignupData  } from "@/controllers/auth";
 import { useRouter } from "next/navigation";
 import {
   LabelInputContainer,

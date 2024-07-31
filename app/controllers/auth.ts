@@ -26,11 +26,8 @@ export const login = async (formData: LoginData) => {
     if (!res.ok) {
       return { error: "Something went wrong" };
     }
-    console.log(res.headers.get('Authorization'))
-    console.log(res.headers.get('authorization'))
-    const token = res.headers.get('Authorization');
-    console.log(token)
 
+    const token = res.headers.get('Authorization');
     if (token) sessionStorage.setItem("token", token);
     
     return res.json();
@@ -49,6 +46,10 @@ export const signup = async (formData: SignupData) => {
       },
       body: JSON.stringify(formData),
     });
+
+    if (!res.ok) {
+      return { error: "Something went wrong" };
+    }
     
     const token = res.headers.get("Authorization");
     if (token) sessionStorage.setItem("token", token);

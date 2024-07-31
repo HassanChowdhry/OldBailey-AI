@@ -1,7 +1,7 @@
 import { useState, useEffect, SetStateAction, Dispatch } from "react"
-import { fetchThread, runStates } from "./threads"
+import { fetchThread, runStates } from "../controllers/threads"
 import { useToast } from "@/components/ui/use-toast";
-import * as api from "./threads";
+import * as api from "../controllers/threads";
 
 export interface Thread {
   thread_id: string;

@@ -22,7 +22,8 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
   const API_BASE_URL = "http://localhost:8000"
   const { toast } = useToast();
   const param = usePathname();
-  
+
+  // move to hooks
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {
@@ -70,7 +71,7 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
     };
 
     verifyToken();
-  }, [router, setUser, toast]);
+  });
   
   return (
     <UserContext.Provider value={{ user, setUser }}>

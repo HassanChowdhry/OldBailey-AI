@@ -1,10 +1,9 @@
 "use client";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "@/context/UserContext";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { login, LoginData } from "@/hooks/auth";
+import { login, LoginData } from "@/controllers/auth";
 import { useRouter } from "next/navigation";
 import {
   LabelInputContainer,
