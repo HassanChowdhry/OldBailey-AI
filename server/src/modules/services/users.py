@@ -1,6 +1,6 @@
 from modules.db import users
 from modules.models.users import User, UserThread
-import bcrypt
+import bcrypt, uuid
 
 # Function to create a new user
 def create_user(first_name, last_name, email, phone_number, password):
@@ -9,10 +9,11 @@ def create_user(first_name, last_name, email, phone_number, password):
   """
   hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
   user = {
+    "user_id": uuid.uuid4().hex,
     "first_name": first_name,
     "last_name": last_name,
     "email": email,
-    "phone_number": phone_number,
+    "phone_number": phone_number if phone_number else None,
     "password": hashed_password,
     "threads": []
   }
@@ -33,11 +34,11 @@ def find_user_by_email(email: str):
     ]
     
     return User(
-      id=str(user['_id']),
+      user_id=user['user_id'],
       first_name=user['first_name'],
       last_name=user['last_name'],
       email=user['email'],
-      phone_number=int(user['phone_number']),
+      phone_number=int(user['phone_number']) if user['phone_number'] else None,
       threads=threads
     )
   else:

@@ -7,7 +7,7 @@ class RunStatus(BaseModel):
   status: str
   
 class ThreadMessage(BaseModel):
-  id: str
+  message_id: str
   content: str
   role: str
   hidden: bool

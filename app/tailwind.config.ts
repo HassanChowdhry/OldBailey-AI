@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+// import colors from "tailwindcss/colors";
 
 const config = {
   darkMode: ["class"],
@@ -27,6 +28,7 @@ const config = {
           5: "rgba(255, 255, 255, 0.80)",
         },
         black: {
+          0: "#000000",
           1: "#15171C",
           2: "#222429",
           3: "#101114",
@@ -45,9 +47,23 @@ const config = {
           1: "#71788B",
         },
       },
+      boxShadow: {
+        input: `0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08)`,
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config
+
+// function addVariablesForColors({ addBase, theme }: any) {
+//   let allColors = theme(colors);
+//   let newVars = Object.fromEntries(
+//     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+//   );
+ 
+//   addBase({
+//     ":root": newVars,
+//   });
+// }
 
 export default config

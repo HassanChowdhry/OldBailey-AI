@@ -13,6 +13,7 @@ OldBailey AI is a project developed to assist researchers and historians by prov
   - [Usage](#usage)
   - [Contact](#contact)
   - [References](#references)
+  - [Ideas](#ideas)
 
 ## About
 
@@ -108,3 +109,30 @@ Tim Hitchcock, Robert Shoemaker, Clive Emsley, Sharon Howard and Jamie McLaughli
 ---
 
 Thank you for exploring OldBailey AI!
+
+## Ideas
+
+Future Features:
+
+- 2FA
+- Localization
+- IAM ; User Roles (to support paid plans & permissions)
+- User preferences
+- Email verification
+- User notifications (newsletters, updates, etc.)
+
+Feedback:
+
+- Use Poetry
+- Dockerize the App (Backend, Frontend & MongoDB)
+- Have a local vs production setup (local should run in debug mode)
+- Look into DB ORM.
+- Introduce Checkstyles (Pylint)
+- Intoduce static-type checking (MyPy)
+- Introduce test coverage
+- Introduce Unit Testing (PyTest)
+- Introduce Integration Testing (PyTest)
+- Introduce CI/CD
+- Introduce proper logging (info, warning, error) & metrics
+- Introduce monitoring (alert system)
+- Do the token authentication & refresh in interceptor/middleware

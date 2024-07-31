@@ -1,3 +1,4 @@
+@import 'animate.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -76,6 +77,10 @@ textarea {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --zinc-800: #27272a;
+    --neutral-800: #262626;
+    --blue-500: #3b82f6;
+    --neutral-700: #404040;
   }
 
   .dark {
@@ -104,4 +109,18 @@ textarea {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+}
+
+.card-1 {
+  animation: fadeInLeft;
+}
+.card-2 {
+  animation: fadeInRight;
+}
+
+.card {
+  opacity: 0;
+  animation-duration: 1s;
+  animation-delay: 0.5s;
+  animation-fill-mode: forwards;
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, SetStateAction, Dispatch } from "react"
-import { fetchThread, runStates } from "./api"
+import { fetchThread, runStates } from "../controllers/threads"
 import { useToast } from "@/components/ui/use-toast";
-import * as api from "./api";
+import * as api from "../controllers/threads";
 
 export interface Thread {
   thread_id: string;
@@ -104,9 +104,6 @@ export default function useThread(
       if (thread_id) {
         const run = await api.postMessage(thread_id, message, gptModel);
         setRun(run);
-        toast({
-          title: "Message sent",
-        });
       }
     } catch (err) {
       console.error(err);

@@ -1,67 +1,61 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import ChatHeader, { gptModels } from "@/components/ChatHeader";
-import ChatInput from "@/components/ChatInput";
-import ChatMessage from "@/components/ChatMessage";
-import ChatStatus from "@/components/ChatStatus";
-import useThread from "@/hooks/useThread";
-import LeftSheet from "@/components/LeftSheet";
-import { Run } from "@/hooks/useThread";
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { SparklesCore } from "@/components/ui/sparkles";
+import { FaArrowRight } from "react-icons/fa6";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import "animate.css"
 
-export default function Home() {
-  const [run, setRun] = useState<Run | null>(null)
-  const [status, setStatus] = useState<string>("")
-  const [processing, setProcessing] = useState<boolean>(false)
-  const [threadId, setThreadId] = useState<string>('') 
-  const [gptModel, setGptModel] = useState<string>(gptModels[0])
-  
-  const { messages, clearThread, sendMessage } = useThread(run, setRun, setProcessing, setStatus, threadId, setThreadId);
-  
-  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToBottom = () => {
-    if (scrollViewportRef.current) {
-      setTimeout(() => {
-        scrollViewportRef.current?.scrollIntoView({ block: "end", behavior: 'smooth' });
-      }, 500);
-    }
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const messageList = messages
-    .filter((message) => message.hidden !== true)
-    .map((message) => <ChatMessage key={message.id} message={message.content} role={message.role} />)
-
+export default function Hero() {    
   return (
-    <main className="flex min-h-screen w-full">
-      <LeftSheet 
-        clearThread={clearThread}
-        disabled={!threadId}
-      />
-      
-      <section className=" text-white-1 w-full md:mx-auto h-screen flex flex-col">
-        <ChatHeader setGptModel={setGptModel} />
-
-        <ScrollArea className="h-screen w-full">
-          <div ref={scrollViewportRef} className="flex w-[800px] mx-auto flex-col grow pb-4">
-              {messageList}
-          </div>
-        </ScrollArea>
-
-        {status && <ChatStatus status={status} />}
-        <ChatInput 
-          onSend={async (message) => {
-            await sendMessage(message, gptModel)
-            scrollToBottom()
-          }}
-          disabled={processing}
-        />
-      </section>
+    <main className="min-h-screen w-full bg-black-0">
+      <div className="w-full absolute h-screen">
+          <SparklesCore
+            id="tsparticlesfullpage"
+            background="transparent"
+            minSize={0.6}
+            maxSize={1.4}
+            particleDensity={100}
+            className="w-full h-full"
+            particleColor="#FFFFFF"
+          />
+      </div>
+      <div className="absolute w-full h-2/3 md:h-screen flex flex-col items-center justify-center">
+        <h1 className="text-4xl sm:text-5xl font-bold text-white-1/95 animate__animated animate__fadeIn delay-500">
+          Old Bailey AI
+        </h1>
+        <div className="flex flex-col gap-4 md:flex-row mt-[60px]">
+          <Card 
+            title="Log In" 
+            href="/login"
+            className="card card-1"
+            description="Log in to your account"
+          />
+          <Card 
+            title="Sign Up" 
+            href="/signup"
+            className="card card-2"
+            description="Create a new account"
+          />
+        </div>
+      </div>
     </main>
   );
+}
+
+const Card = ({title, description, href, className} : {title: string, description: string, href: string, className?: string}) => {
+  return (
+    <Link 
+      href={href}
+      className={cn(`h-full md:h-[400px] w-[280px] shadow-inner shadow-maroon-1 rounded-lg p-8
+                  bg-maroon-3/90 hover:bg-maroon-2 duration-500 text-white-1/90`, className)}>
+      <div className="flex items-center justify-between my-auto text-white-1/95 text-[24px] font-bold">
+        <h1>{title}</h1>
+        <FaArrowRight />
+      </div>
+      <div className="mt-3 text-[16px] leading-6">
+        {description}
+      </div>
+    </Link>
+  )
 }

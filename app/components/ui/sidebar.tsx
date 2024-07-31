@@ -4,7 +4,7 @@ import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
-import { Button, ButtonProps } from "./button";
+import { Button } from "./button";
 
 interface Links {
   href: string;
