@@ -28,9 +28,12 @@ def login():
   if not user:
     return jsonify({'error': 'Unauthorized'}), 401
   
-  stored_password = user['password']
+  # TODO: change this
+  stored_password = users_service.get_user_password(email)
   if not users_service.verify_password(password, stored_password):
     return jsonify({'error': 'Unauthorized'}), 401
+  
+  g.user_email = email
   
   response = make_response(jsonify({
     'user': user.model_dump()
@@ -64,7 +67,7 @@ def register():
     password
   )
   
-  g.user = email
+  g.user_email = email
   
   response = make_response(jsonify({
     'user': user.model_dump()
@@ -75,7 +78,7 @@ def register():
 # Move to a different controller or middleware
 @auth.route('/auth/verify', methods=['POST'])
 def verify():
-  email = g.user
+  email = g.user_email
   user = users_service.find_user_by_email(email)
   
   if not user:

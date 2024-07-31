@@ -1,73 +1,231 @@
 "use client";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-} from "@tabler/icons-react";
-import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
 
+import { useState, useContext } from "react";
+import { UserContext } from "@/context/UserContext";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { signup, SignupData  } from "@/hooks/auth";
+import { useRouter } from "next/navigation";
+import {
+  LabelInputContainer,
+  BottomGradient,
+  SignPageLink,
+  ThirdPartyLoginButtons,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+
+
+//TODO: add view password, JWT encode password
+const formSchema = z.object({
+  first_name: z.string().min(3, { message: "First name is required" }),
+  last_name: z.string().min(3, { message: "Last name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  // phone_number: z.number().optional(),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  verify_password: z.string().min(6, { message: "Please verify your password" }),
+}).refine((data) => data.password === data.verify_password, {
+  message: "Passwords do not match",
+  path: ["verify_password"],
+});
 export default function SignupForm() {
-  // TODO: Add form validation
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted");
+  const { toast } = useToast();
+  const router = useRouter();
+  const { setUser } = useContext(UserContext) ?? {};
+  
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      // phone_number: undefined,
+      password: "",
+      verify_password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const data: SignupData = {
+      first_name: values.first_name,
+      last_name: values.last_name,
+      email: values.email,
+      // phone_number: values.phone_number ? values.phone_number : undefined,
+      password: values.password,
+    };
+
+    const res = await signup(data);
+
+    console.log(res)
+    
+    if (!res) {
+      return toast({ title: "Error", variant: "destructive" });
+    }
+
+    if (!res.user || !setUser) {
+      return toast({ title: "Something went wrong", variant: "destructive" });
+    }
+
+    toast({ title: "Success", description: "Logged in successfully" });
+    setUser(res.user);
+    router.push("/chat");
   };
+
   return (
-    <div className="relative overflow-auto max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input shadow-maroon-1/70 bg-black-0">
+    <div className="relative overflow-auto max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input shadow-maroon-1 bg-black-0">
       <h2 className="font-bold text-xl text-neutral-200 pb-4">
         Sign up for Old Bailey AI
       </h2>
 
-      <form className="my-8" onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-          <LabelInputContainer>
-            <Label htmlFor="firstname">First name</Label>
-            <Input id="firstname" placeholder="John" type="text" />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="lastname">Last name</Label>
-            <Input id="lastname" placeholder="Doe" type="text" />
-          </LabelInputContainer>
-        </div>
+      <Form {...form}>
+        <form className="my-8" onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-2">
+            <FormField
+                control={form.control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <LabelInputContainer>
+                      <FormLabel htmlFor="first_name">First name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            id="first_name" 
+                            placeholder="John" 
+                            type="text" 
+                            {...field}
+                          />
+                        </FormControl>
+                      <FormMessage className="text-red-600" />
+                    </LabelInputContainer>
+                  </FormItem>
+              )}
+            />
+            
+            <FormField
+                control={form.control}
+                name="last_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <LabelInputContainer>
+                      <FormLabel htmlFor="last_name">Last name</FormLabel>
+                        <FormControl>
+                        <Input 
+                          id="last_name" 
+                          placeholder="Doe" 
+                          type="text" 
+                          {...field}
+                        />
+                        </FormControl>
+                      <FormMessage className="text-red-600" />
+                    </LabelInputContainer>
+                  </FormItem>
+              )}
+            />
+          </div>
+          
+          <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="mb-2">
+                    <LabelInputContainer>
+                      <FormLabel htmlFor="email">Email Address</FormLabel>
+                        <FormControl>
+                        <Input 
+                          id="email" 
+                          placeholder="email@email.com" 
+                          type="email" 
+                          {...field}
+                        />
+                        </FormControl>
+                      <FormMessage className="text-red-600" />
+                    </LabelInputContainer>
+                  </FormItem>
+              )}
+          />
 
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="email@email.com" type="email" />
-        </LabelInputContainer>
+          {/* <FormField
+            control={form.control}
+            name="phone_number"
+            render={({ field }) => (
+              <FormItem className="mb-2">
+                <LabelInputContainer>
+                  <FormLabel>Phone Number <span className="text-sm">(Optional)</span></FormLabel>
+                  <FormControl>
+                    <Input 
+                      id="phone_number" 
+                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" 
+                      placeholder="0001112222" 
+                      type="tel" 
+                      {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </LabelInputContainer>
+              </FormItem>
+            )}
+          /> */}
 
-        {/* add proper input for phone */}
-        <LabelInputContainer className="mb-8">
-          <Label htmlFor="twitterpassword">Phone Number - <span className="text-sm">(Optional)</span></Label>
-          <Input id="phone" placeholder="phone number" type="text" />
-        </LabelInputContainer>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="mb-2">
+                <LabelInputContainer>
+                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <FormControl >
+                    <Input 
+                      id="password" 
+                      placeholder="••••••••••••" 
+                      type="password" 
+                      {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </LabelInputContainer>
+              </FormItem>
+            )}
+          />
 
-        {/* TODO: Add password verification + view password feature */}
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="password">Verify Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
-        </LabelInputContainer>
+          <FormField
+            control={form.control}
+            name="verify_password"
+            render={({ field }) => (
+              <FormItem className="mb-2">
+                <LabelInputContainer>
+                  <FormLabel htmlFor="verify_password">Verify Password</FormLabel>
+                  <FormControl>
+                    <Input 
+                      id="verify_password" 
+                      placeholder="••••••••••••" 
+                      type="password" 
+                      {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </LabelInputContainer>
+              </FormItem>
+            )}
+          />
 
-        <button
-          className="bg-gradient-to-br relative group/btn from-zinc-900 to-zinc-900 block bg-zinc-800 w-full text-white-1 rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-          type="submit"
-        >
-          Sign up &rarr;
-          <BottomGradient />
-        </button>
+          <button
+            className="bg-gradient-to-br relative group/btn from-zinc-900 to-zinc-900 block bg-zinc-800 w-full text-white-1 rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+            type="submit"
+          >
+            Sign up &rarr;
+            <BottomGradient />
+          </button>  
+        </form>
+      </Form>
 
-        <div className="bg-gradient-to-r from-transparent via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-
-        <ThirdPartyLoginButtons />
-        
-      </form>
-      <SignPageLink 
+      <div className="bg-gradient-to-r from-transparent via-neutral-700 to-transparent my-5 h-[1px] w-full" />
+      <ThirdPartyLoginButtons />
+      <SignPageLink
+        className="pt-8"
         description="Already have an account?" 
         href="/login" 
         title="Log in"
@@ -75,71 +233,3 @@ export default function SignupForm() {
     </div>
   );
 }
-
-export const ThirdPartyLoginButtons = () => {
-  const { toast } = useToast();
-  const buttonHandler = () => {
-    toast({title: "Feature not implemented yet.", description: "Please sign up using email and password."});
-  }
-
-  return (
-    <div className="flex flex-col space-y-4">
-      <button
-        className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black-1 rounded-md h-10 font-medium bg-zinc-900 shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-        // type="submit"
-        onClick={buttonHandler}
-      >
-        <IconBrandGithub className="h-4 w-4 text-neutral-300" />
-        <span className="text-neutral-300 text-sm">
-          GitHub
-        </span>
-        <BottomGradient />
-      </button>
-      <button
-        className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black-1 rounded-md h-10 font-medium bg-zinc-900 shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-        // type="submit"
-        onClick={buttonHandler}
-      >
-        <IconBrandGoogle className="h-4 w-4 text-neutral-300" />
-        <span className="text-neutral-300 text-sm">
-          Google
-        </span>
-        <BottomGradient />
-      </button>
-    </div>
-  )
-}
-
-export const SignPageLink = ({ description, href, title }: { description: string; href: string; title: string }) => {
-  return (
-    <span className="text-white-2 text-[14px]">
-      {description}&nbsp;
-      <Link href={href} className="ml-1 text-white-1 hover:text-white-5 hover:underline font-semibold">
-        {title}
-      </Link>
-    </span>
-  );
-};
-
-export const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-export const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};

@@ -1,33 +1,12 @@
 "use client";
-import React, { use, useEffect } from "react";
+
 import { SparklesCore } from "@/components/ui/sparkles";
 import { FaArrowRight } from "react-icons/fa6";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import "animate.css"
 
-export default function Hero() {
-  const API_BASE_URL = "http://localhost:8000"
-  const router = useRouter();
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/v1/auth/verify`)
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json()
-        }
-      })
-      .then((data) => {
-        if (data) {
-          // set user
-          router.push("/chat")
-          console.log(data)
-        }
-      })
-      .catch((err) => console.log(err))
-  }, [router]);
-  
-  
+export default function Hero() {    
   return (
     <main className="min-h-screen w-full bg-black-0">
       <div className="w-full absolute h-screen">

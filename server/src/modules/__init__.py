@@ -5,7 +5,12 @@ from .middleware import register_middlewares
 
 def create_app():
   app = Flask(__name__)
-  CORS(app)
+  CORS(
+    app,
+    origins=["*"],
+    expose_headers=["Authorization", "authorization"],
+    allow_headers=["Authorization", "Content-Type", "authorization"],
+  )
   
   register_middlewares(app)
   app.register_blueprint(threads, url_prefix="/v1")

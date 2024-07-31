@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import ChatHeader, { gptModels } from "@/components/ChatHeader";
 import ChatInput from "@/components/ChatInput";
 import ChatMessage from "@/components/ChatMessage";
@@ -9,6 +9,11 @@ import useThread from "@/hooks/useThread";
 import LeftSheet from "@/components/LeftSheet";
 import { Run } from "@/hooks/useThread";
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { UserContext } from "@/context/UserContext"
+
+//TODO: 
+// auth guard
+// make this into layout and threads as children/routes
 
 export default function ChatRoom() {
   const [run, setRun] = useState<Run | null>(null)
@@ -16,6 +21,8 @@ export default function ChatRoom() {
   const [processing, setProcessing] = useState<boolean>(false)
   const [threadId, setThreadId] = useState<string>('') 
   const [gptModel, setGptModel] = useState<string>(gptModels[0])
+  const { user } = useContext(UserContext) ?? {};
+  console.log(user)
   
   const { messages, clearThread, sendMessage } = useThread(run, setRun, setProcessing, setStatus, threadId, setThreadId);
   

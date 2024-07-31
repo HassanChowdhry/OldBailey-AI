@@ -6,6 +6,7 @@ import datetime
 
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
+#TODO: Store refresh in either cache or database
 def create_tokens(email: str):
   now = datetime.datetime.now(datetime.timezone.utc)
   payload = {
@@ -34,16 +35,3 @@ def refresh_access_token(refresh_token):
       raise Exception("Refresh token has expired")
   except jwt.InvalidTokenError:
       raise Exception("Invalid refresh token")
-
-# def decode_auth_token(access_token, refresh_token):
-#   try:
-#     payload = jwt.decode(access_token, JWT_SECRET_KEY, algorithms=['HS256'])
-#     return payload['sub'], access_token
-#   except jwt.ExpiredSignatureError:
-#       try:
-#         new_access_token = refresh_access_token(refresh_token)
-#         return decode_auth_token(new_access_token, refresh_token)
-#       except Exception as e:
-#         return e
-#   except jwt.InvalidTokenError:
-#       return 'Invalid token. Please log in again.'
