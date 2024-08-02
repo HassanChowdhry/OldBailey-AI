@@ -1,6 +1,6 @@
+import bcrypt, uuid
 from modules.db import users
 from modules.models.users import User, UserThread
-import bcrypt, uuid
 
 # Function to create a new user
 def create_user(first_name, last_name, email, phone_number, password):

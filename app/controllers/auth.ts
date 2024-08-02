@@ -21,6 +21,7 @@ export const login = async (formData: LoginData) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -43,6 +44,7 @@ export const signup = async (formData: SignupData) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        credentials: "include",
       },
       body: JSON.stringify(formData),
     });
@@ -57,6 +59,5 @@ export const signup = async (formData: SignupData) => {
     return res.json();
   } catch (error) {
     console.error(error);
-    
   }
 }

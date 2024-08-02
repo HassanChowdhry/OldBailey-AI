@@ -1,5 +1,3 @@
-import modules.services.users as users_service
-import modules.services.auth as auth_service
 from flask import (
   Blueprint,
   request,
@@ -7,6 +5,8 @@ from flask import (
   make_response,
   g
 )
+import modules.services.users as users_service
+import modules.services.auth as auth_service
 
 auth = Blueprint('auth', __name__)
 
@@ -32,13 +32,15 @@ def login():
   stored_password = users_service.get_user_password(email)
   if not users_service.verify_password(password, stored_password):
     return jsonify({'error': 'Unauthorized'}), 401
-  
-  g.user_email = email
-  
+    
   response = make_response(jsonify({
     'user': user.model_dump()
   }), 201)
 
+  g.user_email = email
+  
+  refresh_token = auth_service.create_token(email, days=3)
+  response.set_cookie('refresh_token', refresh_token, httponly=True, samesite=None, secure=True)
 
   return response
   
@@ -67,12 +69,14 @@ def register():
     password
   )
   
-  g.user_email = email
-  
   response = make_response(jsonify({
     'user': user.model_dump()
   }), 201)
-
+  
+  g.user_email = email
+  refresh_token = auth_service.create_token(email, days=3)
+  response.set_cookie('refresh_token', refresh_token, httponly=True, samesite=None, secure=True)
+  
   return response
 
 # Move to a different controller or middleware

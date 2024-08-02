@@ -62,8 +62,6 @@ export default function SignupForm() {
     };
 
     const res = await signup(data);
-
-    console.log(res)
     
     if (!res) {
       return toast({ title: "Error", variant: "destructive" });

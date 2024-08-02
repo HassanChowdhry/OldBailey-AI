@@ -1,13 +1,15 @@
 export const runStates = ["requires_action", "cancelled", "failed", "completed", "expired"]
 
-const API_SERVER = "http://0.0.0.0:8000/api"
+const API_SERVER = "http://localhost:8000/v1"
+
+// TODO: Attach tokens to requests + set new token
+// TODO: check middleware in frontend
 export const createNewThread = async () => {
   try {
     const res = await fetch(`${API_SERVER}/threads`, {
       method: "POST",
     })
     return res.json()
-    // return res
   } catch (error) {
     console.error(error)
   }
