@@ -62,7 +62,9 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
         }
 
         setUser(data.user);
-        router.push("/chat");
+        if (param === "/" || param === "/signup" || param === "/login") {
+          router.push("/chat");
+        }
       } catch (error) {
         console.error(error);
       }

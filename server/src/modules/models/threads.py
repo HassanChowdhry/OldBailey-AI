@@ -10,16 +10,16 @@ class ThreadMessage(BaseModel):
   message_id: str
   content: str
   role: str
-  hidden: bool
   created_at: int
 
+# class Thread(BaseModel):
+#   messages: List[ThreadMessage]
 class Thread(BaseModel):
   thread_id: str
-  title: str
-  content: str
-  user_id: str
+  title: str = None
+  user_email: str
   created_at: int
-  messages: List[ThreadMessage]
+  messages: List[ThreadMessage] = []
 
 class CreateMessage(BaseModel):
   content: str

@@ -1,78 +1,104 @@
-import os
-from dotenv import load_dotenv
-load_dotenv()
+import os, json, datetime
 from flask import (
   Blueprint,
   jsonify,
   request,
+  g
 )
+from dotenv import load_dotenv
 from typing import Dict
-import json
 from openai import OpenAI
 from .registry import *
 from modules.models import *
 import modules.services.ngramsapi as ngrams
+import modules.services.threads as threads_service
+import modules.services.users as users_service
+load_dotenv()
 
 threads = Blueprint('threads', __name__)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 assistant_id = os.getenv("OPENAI_ASSISTANT_ID")
 
-@threads.route('/test', methods=['GET'])
-def test():
-  return jsonify({"message": "Hello World"}), 200
-
 @threads.route('/threads', methods=['POST'])
 def post_new_thread():
+  user_email = g.user_email
   thread = client.beta.threads.create()
-  thread_id = jsonify(thread.id)
-  return thread_id, 201
+  
+  thread_model = (
+    Thread(
+      thread_id=thread.id,
+      user_email=user_email,
+      created_at=thread.created_at,
+    )
+  )
+  
+  user_thread_model = (
+    UserThread(
+      thread_id=thread.id,
+      created_at=thread.created_at
+    )
+  )
+  
+  threads_service.create_thread(thread_model)
+  users_service.add_thread_to_user(user_email, user_thread_model)
+  
+  return jsonify(thread_model.model_dump()), 201
   
 @threads.route("/threads/<thread_id>", methods=['GET'])
 def get_thread(thread_id):
-  messages = client.beta.threads.messages.list(thread_id=thread_id)
-  res = [
-    ThreadMessage(
-        content=message.content[0].text.value,    
-        role=message.role,
-        hidden="type" in message.metadata and message.metadata["type"] == "hidden",
-        id=message.id,
-        created_at=message.created_at
-    )
-    for message in messages.data
-    if hasattr(message.content[0], 'text') and message.content[0].text.value.strip()
-  ]
-  
-  thread = Thread(messages=res)
-  return jsonify(thread.model_dump()), 200
+  messages = threads_service.get_messages_by_thread_id(thread_id)  
+  return jsonify(messages), 200
 
 @threads.route("/threads/<thread_id>", methods=['POST'])
 def post_message_in_thread(thread_id):
-  message = CreateMessage(content=request.json['content'])
-  model = request.json['model']
+  model = request.json.get('model', 'gpt-3.5-turbo')
+  content = request.json['content']
+  role = 'user'
   
-  client.beta.threads.messages.create(
+  message = client.beta.threads.messages.create(
     thread_id=thread_id,
-    content=message.content,
-    role="user"
+    content=content,
+    role=role
   )
   
-  run = client.beta.threads.runs.create_and_poll(
+  message_model = ThreadMessage(
+    message_id=message.id,
+    content=content,
+    role=role,
+    created_at=message.created_at
+  )
+  
+  run = client.beta.threads.runs.create(
     thread_id=thread_id,
     assistant_id=assistant_id,
-    model=model
+    model=model,
+    stream=True
+  )
+  
+  for r in run:
+    if r.event == "thread.message.completed":
+      response = r.data
+
+  if not response:
+    return jsonify({ "message": "no" }), 200
+  
+  # TODO:
+  # if run.status == 'requires_action':
+  #   run = __usengrams(run, thread_id)
+
+  response_content = "\n".join([content.text.value for content in response.content])
+  
+  response_model = ThreadMessage(
+    message_id=response.id,
+    content=response_content,
+    role=response.role,
+    created_at=(response.created_at+1) # incase of same created_at
   )
 
-  if run.status == 'requires_action':
-    run = __usengrams(run, thread_id)
+  threads_service.put_messages(thread_id, message_model, response_model)
   
-  run_status = RunStatus(
-    run_id=run.id,
-    thread_id=thread_id,
-    status=run.status,
-  )
-  
-  return jsonify(run_status.model_dump()), 201
+  return jsonify(response_model.model_dump()), 201
 
 def __usengrams(run, thread_id):
   tool_outputs = []

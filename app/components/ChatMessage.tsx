@@ -17,7 +17,7 @@ export default function ChatMessage({ message, role }: ChatMessageProps) {
   
   return (
     <div className='flex mx-2 my-4 p-2 text-white-1/85'>
-        <div className="rounded-full h-8 min-w-8 bg-tranparent border border-white-2/30 shadow-sm shadow-white-1 text-white-1 flex items-center justify-center">
+        <div className="rounded-full h-8 min-w-8 bg-tranparent border border-white-2/30 shadow-inner shadow-white-2/20 text-white-1 flex items-center justify-center">
           {isUser ? (<FaRegUser />) : (<FaBold />)}
         </div>
         <div className={`${isUser ? userStyles: "px-2.5"} flex flex-col h-full my-auto ml-3  max-w-full overflow-x-scroll`}>

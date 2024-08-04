@@ -53,7 +53,7 @@ const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
       </div>
       
       <div>
-        <Avatar className="hover:cursor-pointer hover:scale-110 hover:shadow-sm hover:shadow-white-4 transition-all duration-500">
+        <Avatar className="hover:cursor-pointer hover:scale-110 hover:shadow-sm transition-all duration-500">
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>YOU</AvatarFallback>
         </Avatar>

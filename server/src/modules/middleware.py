@@ -34,14 +34,14 @@ def register_middlewares(app):
       return
     
     if "Authorization" not in request.headers:
-      raise abort(403, 'Unauthorized')
+      raise abort(403, 'Forbidden')
     
     access_token = request.headers.get('Authorization').replace('Bearer ', '')
     refresh_token = request.cookies.get('refresh_token')
     
     # TODO: check if ok?
     if not access_token and not refresh_token:
-      raise abort(403, 'Unauthorized')
+      raise abort(403, 'Forbidden')
     
     try:
       payload = jwt.decode(access_token, JWT_SECRET_KEY, algorithms=['HS256'])
@@ -49,9 +49,10 @@ def register_middlewares(app):
     except jwt.ExpiredSignatureError:
       try:
         payload = jwt.decode(refresh_token, JWT_SECRET_KEY, algorithms=['HS256'])
-        g.user = payload['sub']
+        g.user_email = payload['sub']
       except Exception as e:
-        raise abort(401, 'Unauthorized')
+        raise abort(403, 'Forbidden')
     except Exception as e:
+      print(e)
       raise abort(401, e)
     

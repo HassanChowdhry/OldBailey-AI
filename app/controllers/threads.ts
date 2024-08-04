@@ -3,12 +3,23 @@ export const runStates = ["requires_action", "cancelled", "failed", "completed",
 const API_SERVER = "http://localhost:8000/v1"
 
 // TODO: Attach tokens to requests + set new token
-// TODO: check middleware in frontend
 export const createNewThread = async () => {
   try {
     const res = await fetch(`${API_SERVER}/threads`, {
       method: "POST",
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem('token') ?? '' }`
+      },
+      credentials: "include",
     })
+
+    if (!res.ok) {
+      return;
+    }
+
+    const new_token = res.headers.get("Authorization");
+    if (new_token) sessionStorage.setItem("token", new_token);
+  
     return res.json()
   } catch (error) {
     console.error(error)
@@ -22,9 +33,20 @@ export const fetchThread = async (threadId: string) => {
   try {
     const res = await fetch(`${API_SERVER}/threads/${threadId}`, {
       method: "GET",
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem('token') ?? '' }`
+      },
+      credentials: "include",
     })
-    const data = await res.json()
-    return data
+    
+    if (!res.ok) {
+      return;
+    }
+
+    const new_token = res.headers.get("Authorization");
+    if (new_token) sessionStorage.setItem("token", new_token);
+  
+    return res.json()
   } catch (error) {
     console.error(error)
   }
@@ -39,14 +61,22 @@ export const postMessage = async (threadId: string, message: string, gptModel: s
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${sessionStorage.getItem('token') ?? '' }`
       },
       body: JSON.stringify({ 
         content: message,
         model: gptModel,
       }),
+      credentials: "include",
     })
-    const data = await res.json()
-    return data
+    if (!res.ok) {
+      return;
+    }
+
+    const new_token = res.headers.get("Authorization");
+    if (new_token) sessionStorage.setItem("token", new_token);
+  
+    return res.json()
   } catch (error) {
     console.error(error)
   }

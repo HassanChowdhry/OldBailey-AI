@@ -11,6 +11,9 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 type LeftSheetProps = {
   clearThread: () => void,
   disabled: boolean,
+  firstName: string,
+  lastName: string,
+  threads: any // TODO: type List<UserThreads>
 }
 
 const NewChatButton = {
@@ -18,8 +21,10 @@ const NewChatButton = {
   icon: <IoIosAddCircleOutline size={22.5} />,
 }
 
-export default function LeftSheet({ clearThread, disabled } : LeftSheetProps) {
+export default function LeftSheet({ clearThread, disabled, firstName, lastName, threads } : LeftSheetProps) {
   const [open, setOpen] = useState(false);
+  const fullName = `${firstName ?? ""} ${lastName ?? ""}`;
+  const initials = `${firstName ? firstName[0] : ''}${lastName ? lastName[0] : ''}`;
   return (
     <div
       className={cn(
@@ -37,12 +42,12 @@ export default function LeftSheet({ clearThread, disabled } : LeftSheetProps) {
           <div>
             <SidebarLink
               link={{
-                label: "Hassan Chowdhry",
+                label: fullName,
                 href: "#",
                 icon: (
-                  <Avatar className="hover:cursor-pointer h-8 w-8 hover:scale-110 hover:shadow-sm hover:shadow-white-4 transition-all duration-500">
+                  <Avatar className="hover:cursor-pointer h-8 w-8 hover:scale-110 hover:shadow-sm transition-all duration-500">
                     <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>YOU</AvatarFallback>
+                    <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                 ),
               }}

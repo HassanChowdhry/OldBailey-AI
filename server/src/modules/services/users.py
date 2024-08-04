@@ -48,8 +48,10 @@ def get_user_password(email: str):
   user = users.find_one({"email": email})
   if user:
     return user['password']
-  else:
-    return None
-
+  return None
+  
+def add_thread_to_user(user_email, thread):
+  users.update_one({"email": user_email}, {"$push": {"threads": thread.model_dump()}})
+  
 def verify_password(password, stored_password):
   return bcrypt.checkpw(password.encode('utf-8'), stored_password)
