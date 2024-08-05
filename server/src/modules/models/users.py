@@ -3,7 +3,7 @@ from typing import List, Optional
 
 class UserThread(BaseModel):
   thread_id: str
-  title: str = None
+  title: Optional[str] = None
   created_at: int
   
   

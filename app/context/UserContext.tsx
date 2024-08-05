@@ -23,7 +23,6 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
   const { toast } = useToast();
   const param = usePathname();
 
-  // move to hooks
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {

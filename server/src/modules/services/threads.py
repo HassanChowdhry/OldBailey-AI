@@ -63,4 +63,4 @@ def create_message(thread_id, content, user_id):
 
 # Function to get messages by thread ID
 def get_messages_by_thread_id(thread_id):
-  return threads.find_one({"thread_id": thread_id})['messages']
+  return threads.find_one({"thread_id": thread_id}).get('messages', [])

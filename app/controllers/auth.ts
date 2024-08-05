@@ -44,9 +44,9 @@ export const signup = async (formData: SignupData) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        credentials: "include",
       },
       body: JSON.stringify(formData),
+      credentials: "include",
     });
 
     if (!res.ok) {

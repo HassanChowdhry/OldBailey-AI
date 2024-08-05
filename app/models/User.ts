@@ -4,5 +4,11 @@ export type UserModal = {
   last_name: string;
   email: string;
   phone_number?: string;
-  threads?: string[];
+  threads?: UserThread[];
+}
+
+export type UserThread = {
+  thread_id: string,
+  title: string
+  created_at: string,
 }

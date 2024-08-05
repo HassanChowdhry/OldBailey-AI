@@ -28,7 +28,6 @@ def login():
   if not user:
     return jsonify({'error': 'Unauthorized'}), 401
   
-  # TODO: change this
   stored_password = users_service.get_user_password(email)
   if not users_service.verify_password(password, stored_password):
     return jsonify({'error': 'Unauthorized'}), 401

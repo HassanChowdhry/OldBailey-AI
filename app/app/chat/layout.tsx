@@ -3,33 +3,29 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import ChatHeader, { gptModels } from "@/components/ChatHeader";
 import ChatInput from "@/components/ChatInput";
-import ChatMessage from "@/components/ChatMessage";
 import ChatStatus from "@/components/ChatStatus";
 import useThread from "@/hooks/useThread";
 import LeftSheet from "@/components/LeftSheet";
-import { Run } from "@/hooks/useThread";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { UserContext } from "@/context/UserContext"
 import { useRouter } from "next/navigation";
-
-//TODO: 
-// auth guard
-// make this into layout and threads as children/routes
+import { useChat } from "@/context/ChatContext";
 
 export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
-  const [run, setRun] = useState<Run | null>(null)
-  const [status, setStatus] = useState<string>("")
+  const router = useRouter();
+  const { user } = useContext(UserContext) ?? {};
+  const { first_name, last_name, threads } = user ?? {};
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+
   const [processing, setProcessing] = useState<boolean>(false)
   const [threadId, setThreadId] = useState<string>('') 
   const [gptModel, setGptModel] = useState<string>(gptModels[0])
-  const { user } = useContext(UserContext) ?? {};
-  const { first_name, last_name, threads } = user ?? {};
-  const router = useRouter();
-  
-  const { messages, clearThread, sendMessage } = useThread(run, setRun, setProcessing, setStatus, threadId, setThreadId);
-  
-  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
 
+  const { state, dispatch } = useChat();
+  const { messages } = state;
+  
+  const { clearThread, sendMessage } = useThread(setProcessing, threadId, setThreadId, dispatch);
+  
   const scrollToBottom = () => {
     if (scrollViewportRef.current) {
       setTimeout(() => {
@@ -43,21 +39,17 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
   }, [messages]);
 
   useEffect(() => {
-    if (threadId) {
+    if (threadId && threadId !== '' && threadId !== 'undefined') {
       router.push(`/chat/${threadId}`)
-    }
+    }``
   }, [threadId, router])
-
-  const messageList = messages
-    .filter((message) => message.hidden !== true)
-    .map((message) => <ChatMessage key={message.id} message={message.content} role={message.role} />)
-
+  
   return (
     <main className="flex min-h-screen w-full">
       <LeftSheet 
         firstName={first_name!}
         lastName={last_name!}
-        threads={threads}
+        threads={threads ?? []}
         clearThread={clearThread}
         disabled={!threadId}
       />
@@ -71,9 +63,11 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
           </div>
         </ScrollArea>
 
-        {status && <ChatStatus status={status} />}
+        {processing && <ChatStatus />}
         <ChatInput 
           onSend={async (message) => {
+            const newMessage = { content: message, role: "user", created_at: Date.now() }
+            dispatch({ type: 'addMessage', payload: newMessage });
             await sendMessage(message, gptModel)
             scrollToBottom()
           }}

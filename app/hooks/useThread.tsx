@@ -1,84 +1,55 @@
-import { useState, useEffect, SetStateAction, Dispatch } from "react"
-import { fetchThread, runStates } from "../controllers/threads"
+import { useEffect, SetStateAction, Dispatch } from "react"
+import { fetchThread } from "../controllers/threads"
 import { useToast } from "@/components/ui/use-toast";
 import * as api from "../controllers/threads";
-
-export interface Thread {
-  thread_id: string;
-  messages: Message[];
-}
-
-export interface Message {
-  id: string;
-  content: string;
-  role: string;
-  created_at: number;
-  hidden?: boolean;
-}
-
-export interface Run {
-  thread_id: string;
-  status: string;
-}
+import { useRouter } from "next/navigation";
+import {  Message } from "@/models/Thread";
 
 export default function useThread(
-    run: Run | null, 
-    setRun: Dispatch<SetStateAction<Run | null>>, 
     setProcessing: (processing: boolean) => void, 
-    setStatus: (status: string) => void,
     threadId: string,
-    setThreadId: Dispatch<SetStateAction<string>>) 
-  {
+    setThreadId: Dispatch<SetStateAction<string>>,
+    dispatch: Dispatch<{ type: 'addMessage' | 'setMessages'; payload: Message | Message[] }>
+  ) {
   
+  const router = useRouter();
   const { toast } = useToast();
-  const [thread, setThread] = useState<Thread | null>();
-  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    if (!threadId) {
-      const storedThreadId = sessionStorage.getItem("thread_id");
-      if (storedThreadId) {
-        setThreadId(storedThreadId);
-        fetchThread(storedThreadId).then(setThread);
+
+    const loadMessages = async (id: string) => {
+      try {
+        const messages = await fetchThread(id);
+        dispatch({ type: 'setMessages', payload: messages });
+      } catch (error) {
+        console.error('Failed to fetch messages', error);
       }
+    };
+  
+    // Check for threadId in sessionStorage
+    const storedThreadId = sessionStorage.getItem("thread_id");
+    if (storedThreadId && !threadId) {
+      setThreadId(storedThreadId);
+      loadMessages(storedThreadId);
     }
-  }, [threadId, setThreadId, setThread, setRun]);
+  }, [threadId, setThreadId, dispatch]); // Ensure dispatch is included if used
 
-  useEffect(() => {
-    if (!run || !runStates.includes(run.status)) {
-      return;
-    }
-    fetchThread(run.thread_id)
-      .then((threadData: Thread) => {
-        setThread(threadData);
-      });
-  }, [run, setThread]);
-
-  useEffect(() => {
-    if (!thread) {
-      return;
-    }
-    const newMessages = [...thread.messages]
-      .sort((a, b) => a.created_at - b.created_at)
-      .filter((message) => message.hidden !== true);
-    setMessages(newMessages);
-  }, [thread, setMessages]);
 
   const clearThread = () => {
-    setStatus('');
     setProcessing(false);
     sessionStorage.removeItem("thread_id");
     setThreadId('');
-    setThread(null);
-    setMessages([]);
+    dispatch({ type: 'setMessages', payload: [] });
+    router.push('/chat');
     toast({
       title: "New Chat Created"
     })
   };
 
-  const createThread = async () => {
+  const createThread = async (message: string) => {
     try {
-      const thread_id = await api.createNewThread();
+
+      const thread_id = await api.createNewThread(message);
       setThreadId(thread_id);
       sessionStorage.setItem("thread_id", thread_id);
       return thread_id;
@@ -92,18 +63,17 @@ export default function useThread(
   }
 
   const sendMessage = async (message: string, gptModel: string) => {
-    setStatus("Running...")
     setProcessing(true)
     let thread_id = threadId;
 
-    if (!thread_id) {
-      thread_id = await createThread();
+    if (!thread_id || thread_id === '' || thread_id === 'undefined') {
+      thread_id = await createThread(message);
     }
 
     try {
       if (thread_id) {
-        const run = await api.postMessage(thread_id, message, gptModel);
-        setRun(run);
+        const response: Message = await api.postMessage(thread_id, message, gptModel);
+        dispatch({ type: 'addMessage', payload: response });
       }
     } catch (err) {
       console.error(err);
@@ -112,15 +82,11 @@ export default function useThread(
         variant: "destructive",
       });
     }
-    setStatus("");
     setProcessing(false);
   };
 
   return { 
-    threadId, 
-    messages, 
     clearThread,
-    createThread,
     sendMessage,
   };
 }

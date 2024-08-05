@@ -16,7 +16,6 @@ class ThreadMessage(BaseModel):
 #   messages: List[ThreadMessage]
 class Thread(BaseModel):
   thread_id: str
-  title: str = None
   user_email: str
   created_at: int
   messages: List[ThreadMessage] = []

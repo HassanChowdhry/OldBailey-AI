@@ -24,6 +24,10 @@ assistant_id = os.getenv("OPENAI_ASSISTANT_ID")
 def post_new_thread():
   user_email = g.user_email
   thread = client.beta.threads.create()
+  content = request.json.get('content')
+  
+  words = content.split()
+  title = ' '.join(words[:6]) if len(words) >= 6 else ' '.join(words)
   
   thread_model = (
     Thread(
@@ -36,14 +40,15 @@ def post_new_thread():
   user_thread_model = (
     UserThread(
       thread_id=thread.id,
-      created_at=thread.created_at
+      created_at=thread.created_at,
+      title=title
     )
   )
   
   threads_service.create_thread(thread_model)
   users_service.add_thread_to_user(user_email, user_thread_model)
   
-  return jsonify(thread_model.model_dump()), 201
+  return jsonify(thread.id), 201
   
 @threads.route("/threads/<thread_id>", methods=['GET'])
 def get_thread(thread_id):
@@ -76,19 +81,51 @@ def post_message_in_thread(thread_id):
     stream=True
   )
   
-  for r in run:
+  events = list(run)
+  last_event = events[-1]
+  
+  used_tools = False
+  if last_event.event == "thread.run.requires_action":
+    run = __usengrams(last_event.data, thread_id)
+    used_tools = True
+  
+  if used_tools:
+    events = list(run)
+  
+  run_incomplete = False
+  runs = []
+  for r in events:
+    if r.event == "thread.run.step.completed":
+      runs.append(r.data)
+      
     if r.event == "thread.message.completed":
       response = r.data
-
-  if not response:
-    return jsonify({ "message": "no" }), 200
+    
+    if r.event == "thread.run.incomplete":
+      run_incomplete = True
   
-  # TODO:
-  # if run.status == 'requires_action':
-  #   run = __usengrams(run, thread_id)
-
-  response_content = "\n".join([content.text.value for content in response.content])
+  if run_incomplete:
+    print("Run is incomplete, do something")
+    
+  response_content = ""
+  has_image = False
   
+  for r in runs:
+    if r.type == "tool_calls" and r.step_details and r.step_details.tool_calls:
+      for call in r.step_details.tool_calls:
+        if call.type == "code_interpreter":
+          response_content += (call.code_interpreter.input) + "\n"
+  
+  for content in response.content:
+    if content.type == "text":
+      response_content += content.text.value + "\n"
+    elif content.type == "image_file":
+      has_image = True
+  
+  if has_image:
+    print("Response has image, do something")  
+  
+  # generate with has_image using ngrams.plot_ngrams(df)
   response_model = ThreadMessage(
     message_id=response.id,
     content=response_content,
@@ -114,14 +151,12 @@ def __usengrams(run, thread_id):
       })
   
   if tool_outputs:
-    try:
-      run = client.beta.threads.runs.submit_tool_outputs_and_poll(
-        thread_id=thread_id,
-        run_id=run.id,
-        tool_outputs=tool_outputs
-      )
-    except Exception as e:
-      raise e
+    run = client.beta.threads.runs.submit_tool_outputs(
+      thread_id=thread_id,
+      run_id=run.id,
+      tool_outputs=tool_outputs,
+      stream=True
+    )
   
   return run
 

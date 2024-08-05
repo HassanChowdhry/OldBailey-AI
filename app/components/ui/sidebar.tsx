@@ -10,6 +10,7 @@ interface Links {
   href: string;
   label: string;
   icon: React.JSX.Element | React.ReactNode;
+  end?: React.JSX.Element | React.ReactNode;
 }
 
 interface ButtonContent {
@@ -95,7 +96,7 @@ export const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden md:flex md:flex-col w-[250px] flex-shrink-0",
+          "h-full pl-4 pr-2 py-4 hidden md:flex md:flex-col w-[250px] flex-shrink-0",
           className
         )}
         animate={{
@@ -171,26 +172,34 @@ export const SidebarLink = ({
 }) => {
   const { open, animate } = useSidebar();
   return (
-    <Link
-      href={link.href}
-      className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2",
-        className
-      )}
-      {...props}
-    >
-      {link.icon}
-
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        className=" text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+    <div className="flex">
+      <Link
+        href={link.href}
+        className={cn(
+          "flex items-center justify-start gap-2 group/sidebar py-2 w-full",
+          className
+        )}
+        {...props}
       >
-        {link.label}
-      </motion.span>
-    </Link>
+        {link.icon}
+
+        <motion.span
+          animate={{
+            display: animate ? (open ? "inline-block" : "none") : "inline-block",
+            opacity: animate ? (open ? 1 : 0) : 1,
+          }}
+          className="w-full text-sm group-hover/sidebar:translate-x-2 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        >
+          {link.label ?? "Title"}
+        </motion.span>
+      </Link>
+    
+        <span className={cn("hover:bg-white-2/20 duration-200 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
+          open ? "opacity-100" : "opacity-0"
+        )}>
+          {link.end ? link.end : ''}
+        </span>
+    </div>
   );
 };
 
@@ -213,7 +222,6 @@ export const SidebarButton = ({
       className={cn(
         "disabled:text-white-2 flex items-center justify-start gap-2 group/sidebar py-2 w-full",
         className,
-        open ? "px-2" : ""
       )}
       variant="outline"
       onClick={clearThread}

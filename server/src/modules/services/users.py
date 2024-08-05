@@ -28,7 +28,7 @@ def find_user_by_email(email: str):
     threads = [
       UserThread(
         thread_id=thread['thread_id'],
-        title=thread['thread_title'],
+        title=thread['title'] if 'title' in thread else None,
         created_at=int(thread['created_at'])
       ) for thread in user['threads']
     ]

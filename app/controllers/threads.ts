@@ -1,15 +1,19 @@
+import { Message } from "@/models/Thread"
+
 export const runStates = ["requires_action", "cancelled", "failed", "completed", "expired"]
 
 const API_SERVER = "http://localhost:8000/v1"
 
-// TODO: Attach tokens to requests + set new token
-export const createNewThread = async () => {
+export const createNewThread = async (message: string) => {
+
   try {
     const res = await fetch(`${API_SERVER}/threads`, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         'Authorization': `Bearer ${sessionStorage.getItem('token') ?? '' }`
       },
+      body: JSON.stringify({ content: message }),
       credentials: "include",
     })
 
@@ -27,7 +31,7 @@ export const createNewThread = async () => {
 }
 
 export const fetchThread = async (threadId: string) => {
-  if (!threadId) {
+  if (!threadId || threadId === "undefined") {
     throw new Error("threadId is required")
   }
   try {
@@ -53,9 +57,16 @@ export const fetchThread = async (threadId: string) => {
 }
 
 export const postMessage = async (threadId: string, message: string, gptModel: string) => {
-  if (!threadId || !message) {
+  if (!threadId || !message || threadId === "undefined") {
     throw new Error("threadId and message are required")
   }
+
+  const errorResponse: Message = {
+    content: "Something plapped out, either try sending another message or create a new chat",
+    created_at: Date.now(),
+    role: "assistant"
+  }
+
   try {
     const res = await fetch(`${API_SERVER}/threads/${threadId}`, {
       method: "POST",
@@ -69,8 +80,9 @@ export const postMessage = async (threadId: string, message: string, gptModel: s
       }),
       credentials: "include",
     })
+    
     if (!res.ok) {
-      return;
+      return errorResponse;
     }
 
     const new_token = res.headers.get("Authorization");
@@ -79,5 +91,6 @@ export const postMessage = async (threadId: string, message: string, gptModel: s
     return res.json()
   } catch (error) {
     console.error(error)
+    return errorResponse;
   }
 }
