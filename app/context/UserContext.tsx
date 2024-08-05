@@ -23,13 +23,11 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
   const { toast } = useToast();
   const param = usePathname();
 
-  // move to hooks
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {
-      router.push("/");
-
       if (param !== "/" && param !== "/signup" && param !== "/login") {
+        router.push("/");
         toast({ title: "Please Login to continue", variant: "destructive" });
       }
 
@@ -39,7 +37,6 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
     const verifyToken = async () => {
 
       try {
-        console.log(token)
         const res = await fetch(`${API_BASE_URL}/v1/auth/verify`, { 
           method: "POST",
           headers: { 
@@ -64,14 +61,16 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
         }
 
         setUser(data.user);
-        router.push("/chat");
+        if (param === "/" || param === "/signup" || param === "/login") {
+          router.push("/chat");
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
     verifyToken();
-  });
+  }, []);
   
   return (
     <UserContext.Provider value={{ user, setUser }}>

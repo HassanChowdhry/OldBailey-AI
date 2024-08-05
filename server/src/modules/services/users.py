@@ -1,6 +1,6 @@
+import bcrypt, uuid
 from modules.db import users
 from modules.models.users import User, UserThread
-import bcrypt, uuid
 
 # Function to create a new user
 def create_user(first_name, last_name, email, phone_number, password):
@@ -28,7 +28,7 @@ def find_user_by_email(email: str):
     threads = [
       UserThread(
         thread_id=thread['thread_id'],
-        title=thread['thread_title'],
+        title=thread['title'] if 'title' in thread else None,
         created_at=int(thread['created_at'])
       ) for thread in user['threads']
     ]
@@ -48,8 +48,10 @@ def get_user_password(email: str):
   user = users.find_one({"email": email})
   if user:
     return user['password']
-  else:
-    return None
-
+  return None
+  
+def add_thread_to_user(user_email, thread):
+  users.update_one({"email": user_email}, {"$push": {"threads": thread.model_dump()}})
+  
 def verify_password(password, stored_password):
   return bcrypt.checkpw(password.encode('utf-8'), stored_password)

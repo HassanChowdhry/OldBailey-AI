@@ -1,10 +1,6 @@
 import { SparklesCore } from '@/components/ui/sparkles';
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
   return (
     <main className="relative min-h-screen w-full bg-black-0">
       <div className="w-full absolute h-screen">

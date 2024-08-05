@@ -10,6 +10,7 @@ def create_app():
     origins=["*"],
     expose_headers=["Authorization", "authorization"],
     allow_headers=["Authorization", "Content-Type", "authorization"],
+    supports_credentials=True,
   )
   
   register_middlewares(app)

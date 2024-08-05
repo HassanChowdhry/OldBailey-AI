@@ -1,17 +1,10 @@
+import uuid
+from modules.models.threads import *
+from modules.db import threads
+
 # Function to create a new thread
-def create_thread(title, content, user_id):
-  """
-  Creates a new thread in the database.
-
-  Args:
-    title (str): The title of the thread.
-    content (str): The content of the thread.
-    user_id (int): The ID of the user who created the thread.
-
-  Returns:
-    int: The ID of the newly created thread.
-  """
-  pass
+def create_thread(thread: Thread):
+  threads.insert_one(thread.model_dump())
 
 # Function to update a thread's content
 def update_thread_content(thread_id, new_content):
@@ -26,17 +19,8 @@ def update_thread_content(thread_id, new_content):
 
 # Function to get a thread by ID
 def get_thread(thread_id):
-  """
-  Retrieves a thread from the database by its ID.
-
-  Args:
-    thread_id (int): The ID of the thread to retrieve.
-
-  Returns:
-    tuple: A tuple representing the thread's information (id, title, content, user_id).
-            Returns None if no thread is found.
-  """
-  pass
+  return threads.find_one({"thread_id": thread_id})
+  
 
 # Function to delete a thread
 def delete_thread(thread_id):
@@ -51,6 +35,17 @@ def delete_thread(thread_id):
 
 ########################### Messages ###########################
 
+def put_messages(thread_id: str, message_model: ThreadMessage, response_model: ThreadMessage):
+  threads.update_one(
+    {"thread_id": thread_id}, 
+    {
+      "$push": {
+          "messages": {
+              "$each": [message_model.model_dump(), response_model.model_dump()]
+          }
+      }
+    }
+  )
 # Function to create a new message
 def create_message(thread_id, content, user_id):
   """
@@ -67,15 +62,5 @@ def create_message(thread_id, content, user_id):
   pass
 
 # Function to get messages by thread ID
-def get_messages_by_thread(thread_id):
-  """
-  Retrieves all messages from the database that belong to a specific thread.
-
-  Args:
-    thread_id (int): The ID of the thread to retrieve messages from.
-
-  Returns:
-    list: A list of tuples representing the messages' information (id, thread_id, content, user_id).
-          Returns an empty list if no messages are found.
-  """
-  pass
+def get_messages_by_thread_id(thread_id):
+  return threads.find_one({"thread_id": thread_id}).get('messages', [])
