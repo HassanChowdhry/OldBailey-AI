@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, createContext, ReactNode, useEffect } from "react";
+import React, { useState, createContext, ReactNode, useEffect, useContext } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { UserModal } from "@/models/User";
 import { useToast } from "@/components/ui/use-toast";
@@ -77,4 +77,13 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
       {children}
     </UserContext.Provider>
   );
+}
+
+
+export function useUserContext() {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useThreadContext must be used within a ThreadProvider');
+  }
+  return context;
 }

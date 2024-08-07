@@ -1,12 +1,37 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation"
-import { useChat } from "@/context/ChatContext";
+import { useThreadContext } from "@/context/ThreadContext";
 import ChatMessage from "@/components/ChatMessage";
+import { useChat } from "@/context/ChatContext";
+import { fetchThread } from "@/controllers/threads";
 
 const Chat = () => {
-  const { threadId } = useParams();
+  const { threadId: paramThreadId } = useParams();
+
+  const { threadId: contextThreadId, setThreadId } = useThreadContext();
   const { state, dispatch } = useChat();
   const { messages } = state;
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (paramThreadId !== contextThreadId) {
+        setLoading(true);
+        try {
+          const fetchedMessages = await fetchThread(paramThreadId.toString());
+          dispatch({ type: 'setMessages', payload: fetchedMessages });
+          setThreadId(paramThreadId.toString());
+        } catch (error) {
+          console.error('Failed to fetch messages', error);
+        }
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [paramThreadId, contextThreadId, dispatch, setThreadId]);
 
   let messageList = null;
   if (messages) {
@@ -15,7 +40,7 @@ const Chat = () => {
 
   return (
     <>
-      {messageList}
+      {loading ? <p>Loading messages...</p> : messageList}
     </>
   )
 }

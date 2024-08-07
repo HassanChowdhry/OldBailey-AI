@@ -43,14 +43,14 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName, 
             </div>
 
             <div className="mt-8 flex flex-col gap-2">
-              {threads.map((thread, index) => (
+              {threads.toReversed().map((thread, index) => (
                   <SidebarLink
                     key={index}
                     link={{
                       label: thread.title,
-                      href: "#",
-                      icon: <IoMdChatboxes className="text-neutral-500 h-5 w-5 flex-shrink-0"/>,
-                      end: <BsThreeDotsVertical className="text-neutral-500 hover:text-white-5 h-5 w-5 flex-shrink-0"/>
+                      href: `/chat/${thread.thread_id}`,
+                      icon: <IoMdChatboxes className="h-5 w-5 flex-shrink-0"/>,
+                      end: <BsThreeDotsVertical className="h-5 w-5 flex-shrink-0"/>
                     }}
                   />
                 ))}

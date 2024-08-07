@@ -4,11 +4,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon?: React.ReactNode;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, icon, type, ...props }, ref) => {
     const radius = 100; // change this to increase the rdaius of the hover effect
     const [visible, setVisible] = React.useState(false);
 
@@ -36,7 +37,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
         className="p-[2px] rounded-lg transition duration-300 group/input"
-      >
+      > 
+      <div className="flex">
         <input
           type={type}
           className={cn(
@@ -52,6 +54,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           {...props}
         />
+        <div className="text-white-2 hover:scale-110 duration-300 bg-transparent flex justify-around items-center cursor-pointer">
+        {icon}
+        </div>
+        </div>
       </motion.div>
     );
   }

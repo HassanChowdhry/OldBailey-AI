@@ -7,23 +7,24 @@ import ChatStatus from "@/components/ChatStatus";
 import useThread from "@/hooks/useThread";
 import LeftSheet from "@/components/LeftSheet";
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { UserContext } from "@/context/UserContext"
-import { useRouter } from "next/navigation";
+import { useUserContext } from "@/context/UserContext"
 import { useChat } from "@/context/ChatContext";
+import { useThreadContext } from "@/context/ThreadContext";
 
 export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
-  const router = useRouter();
-  const { user } = useContext(UserContext) ?? {};
-  const { first_name, last_name, threads } = user ?? {};
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+  
+  const { user } = useUserContext();
+  const { first_name, last_name, threads } = user ?? {};
 
-  const [processing, setProcessing] = useState<boolean>(false)
-  const [threadId, setThreadId] = useState<string>('') 
-  const [gptModel, setGptModel] = useState<string>(gptModels[0])
-
+  const { threadId, setThreadId } = useThreadContext();
+  
   const { state, dispatch } = useChat();
   const { messages } = state;
-  
+
+  const [processing, setProcessing] = useState<boolean>(false)
+  const [gptModel, setGptModel] = useState<string>(gptModels[0])
+
   const { clearThread, sendMessage } = useThread(setProcessing, threadId, setThreadId, dispatch);
   
   const scrollToBottom = () => {
@@ -37,12 +38,6 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    if (threadId && threadId !== '' && threadId !== 'undefined') {
-      router.push(`/chat/${threadId}`)
-    }``
-  }, [threadId, router])
   
   return (
     <main className="flex min-h-screen w-full">

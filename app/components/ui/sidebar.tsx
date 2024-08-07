@@ -1,4 +1,6 @@
 "use client";
+
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
@@ -171,13 +173,17 @@ export const SidebarLink = ({
   props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
+  const pathname = usePathname();
+  const isActive = pathname === link.href;
+
   return (
     <div className="flex">
       <Link
         href={link.href}
         className={cn(
           "flex items-center justify-start gap-2 group/sidebar py-2 w-full",
-          className
+          className,
+          isActive ? "text-white-1": "text-white-2"
         )}
         {...props}
       >
@@ -188,14 +194,14 @@ export const SidebarLink = ({
             display: animate ? (open ? "inline-block" : "none") : "inline-block",
             opacity: animate ? (open ? 1 : 0) : 1,
           }}
-          className="w-full text-sm group-hover/sidebar:translate-x-2 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+          className="w-full text-sm group-hover/sidebar:translate-x-2 transition duration-3000 whitespace-pre inline-block !p-0 !m-0"
         >
           {link.label ?? "Title"}
         </motion.span>
       </Link>
     
-        <span className={cn("hover:bg-white-2/20 duration-200 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
-          open ? "opacity-100" : "opacity-0"
+        <span className={cn("hover:bg-white-2/20 text-white-2/50 hover:text-white-1 duration-300 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
+          open ? "opacity-100" : "opacity-0",
         )}>
           {link.end ? link.end : ''}
         </span>
