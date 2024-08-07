@@ -8,7 +8,7 @@ import "animate.css"
 
 export default function Hero() {    
   return (
-    <main className="min-h-screen w-full bg-black-0">
+    <main className="min-h-screen w-full bg-black-0 text-white-1/90">
       <div className="w-full absolute h-screen">
           <SparklesCore
             id="tsparticlesfullpage"
@@ -21,7 +21,7 @@ export default function Hero() {
           />
       </div>
       <div className="absolute w-full h-2/3 md:h-screen flex flex-col items-center justify-center">
-        <h1 className="text-4xl sm:text-5xl font-bold text-white-1/95 animate__animated animate__fadeIn delay-500">
+        <h1 className="text-4xl sm:text-5xl font-bold animate__animated animate__fadeIn delay-500">
           Old Bailey AI
         </h1>
         <div className="flex flex-col gap-4 md:flex-row mt-[60px]">
@@ -48,8 +48,8 @@ const Card = ({title, description, href, className} : {title: string, descriptio
     <Link 
       href={href}
       className={cn(`h-full md:h-[400px] w-[280px] shadow-inner shadow-maroon-1 rounded-lg p-8
-                  bg-maroon-3/90 hover:bg-maroon-2 duration-500 text-white-1/90`, className)}>
-      <div className="flex items-center justify-between my-auto text-white-1/95 text-[24px] font-bold">
+                  bg-maroon-3/90 hover:bg-maroon-2 duration-500 text-white-5`, className)}>
+      <div className="flex items-center justify-between my-auto text-[24px] font-bold">
         <h1>{title}</h1>
         <FaArrowRight />
       </div>

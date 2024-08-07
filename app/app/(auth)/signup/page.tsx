@@ -73,7 +73,7 @@ export default function SignupForm() {
       return toast({ title: "Something went wrong", variant: "destructive" });
     }
 
-    toast({ title: "Success", description: "Logged in successfully" });
+    toast({ title: "Success", description: "Logged in successfully", variant: "success" });
     setUser(res.user);
     router.push("/chat");
   };

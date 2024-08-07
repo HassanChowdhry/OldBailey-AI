@@ -33,14 +33,14 @@ export default function useThread(
       router.push(`/chat/${storedThreadId}`);
       loadMessages(storedThreadId);
     }
-  }, [threadId, setThreadId, dispatch, router]); // Ensure dispatch is included if used
+  }, [threadId, setThreadId, dispatch, router]);
 
-
+  //todo: check what is wrong
   const clearThread = () => {
     setProcessing(true);
     sessionStorage.removeItem("thread_id");
-    setThreadId('');
     router.push('/chat');
+    setThreadId('');
     dispatch({ type: 'setMessages', payload: [] });
     toast({
       title: "New Chat Created"
@@ -53,7 +53,6 @@ export default function useThread(
       const thread_id = await api.createNewThread(message);
       setThreadId(thread_id);
       sessionStorage.setItem("thread_id", thread_id);
-      console.log("here I am bro", thread_id);
       router.push(`/chat/${thread_id}`);
       return thread_id;
     } catch (err) {

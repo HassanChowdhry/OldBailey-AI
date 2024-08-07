@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover"
 import { IoMdSettings, IoIosLogOut } from "react-icons/io";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 
 type PFPprops = {
   disabled?: boolean;
@@ -18,11 +19,14 @@ const PFP = ({disabled}: PFPprops) => {
   const { user } = useUserContext();
   const { first_name, last_name } = user ?? {};
   const initials = `${first_name ? first_name[0] : ''}${last_name ? last_name[0] : ''}`;
+  const router = useRouter();
+  const { toast } = useToast();
+
   const commonStyles = "flex items-center tracking-wide gap-3 px-3 py-3.5 m-1.5 rounded-md transition-all duration-300 cursor-pointer hover:bg-white-2/10";
   const LogOut = () => {
-    // console.log(cookieStore)
-    // sessionStorage.removeItem("token");
-    // router.push("/");
+    sessionStorage.removeItem("token");
+    router.push("/");
+    toast({ title: "Logged out successfully", variant: "success" });
   };
   
   if (disabled) {

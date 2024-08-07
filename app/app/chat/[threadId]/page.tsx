@@ -16,6 +16,8 @@ const Chat = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log('paramThreadId', paramThreadId);
+    console.log('contextThreadId', contextThreadId);
     const fetchMessages = async () => {
       if (paramThreadId !== contextThreadId) {
         setLoading(true);
@@ -31,7 +33,7 @@ const Chat = () => {
     };
 
     fetchMessages();
-  }, [paramThreadId, contextThreadId, dispatch, setThreadId]);
+  }, [paramThreadId]);
 
   let messageList = null;
   if (messages) {
