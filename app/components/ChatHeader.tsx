@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Select,
   SelectContent,
@@ -7,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import PFP from '@/components/PFP';
 
 export const gptModels: string[] = [
   "gpt-3.5-turbo",
@@ -53,10 +53,7 @@ const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
       </div>
       
       <div>
-        <Avatar className="hover:cursor-pointer hover:scale-110 hover:shadow-sm transition-all duration-500">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>YOU</AvatarFallback>
-        </Avatar>
+        <PFP />
       </div>
     </section>
   )

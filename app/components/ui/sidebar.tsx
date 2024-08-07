@@ -7,6 +7,13 @@ import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { Button } from "./button";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
+import Tip from "@/components/Tip";
 
 interface Links {
   href: string;
@@ -199,12 +206,18 @@ export const SidebarLink = ({
           {link.label ?? "Title"}
         </motion.span>
       </Link>
-    
-        <span className={cn("hover:bg-white-2/20 text-white-2/50 hover:text-white-1 duration-300 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
-          open ? "opacity-100" : "opacity-0",
-        )}>
-          {link.end ? link.end : ''}
-        </span>
+      <Tip 
+        TipContent="Options"
+        TipSide="top"
+        TipTrigger={
+          <span className={cn("hover:bg-white-2/20 text-white-2/50 hover:text-white-1 duration-300 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
+            open ? "opacity-100" : "opacity-0",
+          )}>
+            {link.end ? link.end : ''}
+          </span>
+        }
+      />
+
     </div>
   );
 };
@@ -224,27 +237,33 @@ export const SidebarButton = ({
 }) => {
   const { open, animate } = useSidebar();
   return (
-    <Button
-      className={cn(
-        "disabled:text-white-2 flex items-center justify-start gap-2 group/sidebar py-2 w-full",
-        className,
-      )}
-      variant="outline"
-      onClick={clearThread}
-      disabled={disabled || false}
-      {...props}
-    >
-      {content.icon}
-
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        className="text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-      >
-        {content.label}
-      </motion.span>
-    </Button>
+    <Tip 
+      TipContent="New Chat"
+      TipSide="right"
+      TipTrigger={
+        <Button
+          className={cn(
+            "disabled:text-white-2 flex items-center justify-start gap-2 group/sidebar py-2 w-full",
+            className,
+         )}
+          variant="outline"
+          onClick={clearThread}
+          disabled={disabled || false}
+          {...props}
+        >
+          {content.icon}
+  
+          <motion.span
+            animate={{
+              display: animate ? (open ? "inline-block" : "none") : "inline-block",
+              opacity: animate ? (open ? 1 : 0) : 1,
+            }}
+            className="text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+          >
+            {content.label}
+          </motion.span>
+        </Button>
+      }
+    />
   );
 };

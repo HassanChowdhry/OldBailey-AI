@@ -1,10 +1,11 @@
 import Markdown from 'react-markdown'
-import { FaRegUser } from "react-icons/fa6";
 import { FaBold } from "react-icons/fa";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/obsidian.css';  
+import PFP from '@/components/PFP';
+
 import "./ChatMessage.scss";
+import 'highlight.js/styles/obsidian.css';  
 
 type ChatMessageProps = {
   message: string;
@@ -18,7 +19,7 @@ export default function ChatMessage({ message, role }: ChatMessageProps) {
   return (
     <div className='flex mx-2 my-4 p-2 text-white-1/85'>
         <div className="rounded-full h-8 min-w-8 bg-tranparent border border-white-2/30 shadow-inner shadow-white-2/20 text-white-1 flex items-center justify-center">
-          {isUser ? (<FaRegUser />) : (<FaBold />)}
+          {isUser ? (<PFP />) : (<FaBold />)}
         </div>
         <div className={`${isUser ? userStyles: "px-2.5"} flex flex-col h-full my-auto ml-3  max-w-full overflow-x-scroll`}>
             <Markdown
@@ -26,7 +27,7 @@ export default function ChatMessage({ message, role }: ChatMessageProps) {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}
             >
-                {message}
+              {message}
             </Markdown>
         </div>
     </div>

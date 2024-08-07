@@ -1,13 +1,15 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarButton, SidebarLink } from "./ui/sidebar";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { IoIosAddCircleOutline, IoMdChatboxes } from "react-icons/io";
-import { UserThread } from "@/models/User";
+
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { IoIosAddCircleOutline, IoMdChatboxes } from "react-icons/io";
+
+import { Sidebar, SidebarBody, SidebarButton, SidebarLink } from "@/components/ui/sidebar";
+import { UserThread } from "@/models/User";
+import { cn } from "@/lib/utils";
+import PFP from '@/components/PFP';
 
 type LeftSheetProps = {
   clearThread: () => void;
@@ -25,7 +27,6 @@ const NewChatButton = {
 export default function LeftSheet({ clearThread, disabled, firstName, lastName, threads }: LeftSheetProps) {
   const [open, setOpen] = useState(false);
   const fullName = `${firstName ?? ""} ${lastName ?? ""}`;
-  const initials = `${firstName ? firstName[0] : ''}${lastName ? lastName[0] : ''}`;
 
   return (
     <div
@@ -64,10 +65,7 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName, 
                 label: fullName,
                 href: "#",
                 icon: (
-                  <Avatar className="hover:cursor-pointer h-8 w-8 hover:scale-110 hover:shadow-sm transition-all duration-500">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
+                  <PFP />
                 ),
               }}
             />
