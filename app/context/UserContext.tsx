@@ -3,6 +3,7 @@ import React, { useState, createContext, ReactNode, useEffect, useContext } from
 import { useRouter, usePathname } from "next/navigation";
 import { UserModal } from "@/models/User";
 import { useToast } from "@/components/ui/use-toast";
+import { AUTH_BASE_URL } from "@/controllers/auth";
 
 type AppProviderProps =  {
   children: ReactNode;
@@ -19,7 +20,7 @@ export const UserContext = createContext<UserContextType>({ user: {}, setUser: (
 export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserModal | null>(null);
   const router = useRouter();
-  const API_BASE_URL = "http://localhost:8000"
+  const API_BASE_URL = "http://localhost:8080"
   const { toast } = useToast();
   const param = usePathname();
 
@@ -37,7 +38,7 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
     const verifyToken = async () => {
 
       try {
-        const res = await fetch(`${API_BASE_URL}/v1/auth/verify`, { 
+        const res = await fetch(`${AUTH_BASE_URL}/verify`, { 
           method: "POST",
           headers: { 
             'Authorization': `Bearer ${sessionStorage.getItem('token') ?? '' }`
