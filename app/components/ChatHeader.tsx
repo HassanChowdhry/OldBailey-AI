@@ -29,13 +29,13 @@ const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
       <div className="flex gap-5">
         <Select onValueChange={(e) => {setGptModel(e)}} defaultValue={gptModels[0]}>
           <SelectTrigger 
-            className="border-none w-auto p-2 transition-all duration-500 hover:bg-gray-1/30 text-[16px] text-white-5"
+            className="border-none w-auto p-2 transition-all duration-500 hover:bg-gray-1/30 text-[16px] text-white-2"
           >
             <SelectValue placeholder={gptModels[0]} />
           </SelectTrigger>
 
           <SelectContent 
-            className="text-white-1 border-maroon-3 shadow-md hover:cursor-pointer bg-maroon-2 min-w-[250px] rounded-lg"
+            className="text-white-2 border-maroon-3 shadow-md hover:cursor-pointer bg-maroon-2 min-w-[250px] rounded-lg"
           >
             <SelectGroup>
               {gptModels.map((model) => (

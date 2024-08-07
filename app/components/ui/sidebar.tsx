@@ -7,13 +7,8 @@ import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { Button } from "./button";
-// import {
-//   Tooltip,
-//   TooltipContent,
-//   TooltipProvider,
-//   TooltipTrigger,
-// } from "@/components/ui/tooltip";
 import Tip from "@/components/Tip";
+import Options from "@/components/Options";
 
 interface Links {
   href: string;
@@ -184,7 +179,7 @@ export const SidebarLink = ({
   const isActive = pathname === link.href;
 
   return (
-    <div className="flex">
+    <div className="flex max-h-[40px]">
       <Link
         href={link.href}
         className={cn(
@@ -206,17 +201,8 @@ export const SidebarLink = ({
           {link.label ?? "Title"}
         </motion.span>
       </Link>
-      <Tip 
-        TipContent="Options"
-        TipSide="top"
-        TipTrigger={
-          <span className={cn("hover:bg-white-2/20 text-white-2/50 hover:text-white-1 duration-300 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
-            open ? "opacity-100" : "opacity-0",
-          )}>
-            {link.end ? link.end : ''}
-          </span>
-        }
-      />
+
+      <Options open={open} icon={link.end} />
 
     </div>
   );

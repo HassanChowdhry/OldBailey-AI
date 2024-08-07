@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { IoIosAddCircleOutline, IoMdChatboxes } from "react-icons/io";
+import { BsThreeDots } from "react-icons/bs";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { PiChatsLight } from "react-icons/pi";
 
 import { Sidebar, SidebarBody, SidebarButton, SidebarLink } from "@/components/ui/sidebar";
 import { UserThread } from "@/models/User";
@@ -50,8 +51,8 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName, 
                     link={{
                       label: thread.title,
                       href: `/chat/${thread.thread_id}`,
-                      icon: <IoMdChatboxes className="h-5 w-5 flex-shrink-0"/>,
-                      end: <BsThreeDotsVertical className="h-5 w-5 flex-shrink-0"/>
+                      icon: <PiChatsLight className="h-5 w-5 flex-shrink-0"/>,
+                      end: <BsThreeDots size={25} className="h-5 w-5 flex-shrink-0"/>
                     }}
                   />
                 ))}

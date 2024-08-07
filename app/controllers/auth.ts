@@ -61,3 +61,6 @@ export const signup = async (formData: SignupData) => {
     console.error(error);
   }
 }
+
+const logout = async () => {
+}

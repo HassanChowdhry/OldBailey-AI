@@ -34,7 +34,7 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
 
         <Button
           variant="default"
-          disabled={disabled}
+          disabled={disabled || !message}
           className="rounded-full hover:bg-white-2 text-black-1 disabled:bg-text-white-3 disabled:bg-white-2"
         >
           <IoIosSend size={20} />
