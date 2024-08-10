@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useContext } from "react";
-import { UserContext } from "@/context/UserContext";
+import { useState } from "react";
+import { useUserContext } from "@/context/UserContext"
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { signup, SignupData  } from "@/controllers/auth";
@@ -37,7 +37,7 @@ const formSchema = z.object({
 export default function SignupForm() {
   const { toast } = useToast();
   const router = useRouter();
-  const { setUser } = useContext(UserContext) ?? {};
+  const { setUser, threadsDispatch } = useUserContext();
 
   const [passwordVisibility, setPasswordVisibility] = useState<string>('password');
   const [confirmPasswordVisibility, setconfirmPasswordVisibility] = useState<string>('password');
@@ -75,6 +75,7 @@ export default function SignupForm() {
 
     toast({ title: "Success", description: "Logged in successfully", variant: "success" });
     setUser(res.user);
+    if (threadsDispatch) threadsDispatch({ type: "setThreads", payload: res.user.threads });
     router.push("/chat");
   };
 

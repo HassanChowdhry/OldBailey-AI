@@ -168,10 +168,12 @@ export const MobileSidebar = ({
 export const SidebarLink = ({
   link,
   className,
+  threadId,
   ...props
 }: {
   link: Links;
   className?: string;
+  threadId?: string;
   props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
@@ -185,7 +187,7 @@ export const SidebarLink = ({
         className={cn(
           "flex items-center justify-start gap-2 group/sidebar py-2 w-full",
           className,
-          isActive ? "text-white-1": "text-white-2"
+          isActive ? "text-white-1 font-bold text-[20px] ": "text-white-2 font-normal text-[16px]"
         )}
         {...props}
       >
@@ -196,13 +198,13 @@ export const SidebarLink = ({
             display: animate ? (open ? "inline-block" : "none") : "inline-block",
             opacity: animate ? (open ? 1 : 0) : 1,
           }}
-          className="w-full text-sm group-hover/sidebar:translate-x-2 transition duration-3000 whitespace-pre inline-block !p-0 !m-0"
+          className="w-full max-w-[170px] truncate overflow-hidden text-sm group-hover/sidebar:translate-x-2 transition duration-3000 whitespace-pre inline-block !p-0 !m-0"
         >
           {link.label ?? "Title"}
         </motion.span>
       </Link>
 
-      <Options open={open} icon={link.end} />
+      <Options open={open} icon={link.end} thisThreadId={threadId} />
 
     </div>
   );

@@ -22,14 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ThreadProvider>
         <UserContextProvider>
         <ChatProvider>
-        <ThreadProvider>
           {children}
           <Toaster />
-        </ThreadProvider>
         </ChatProvider>
         </UserContextProvider>
+        </ThreadProvider>
       </body>
     </html>
   );

@@ -1,21 +1,11 @@
 import uuid
+from flask import g
 from modules.models.threads import *
-from modules.db import threads
+from modules.db import threads, users
 
 # Function to create a new thread
 def create_thread(thread: Thread):
   threads.insert_one(thread.model_dump())
-
-# Function to update a thread's content
-def update_thread_content(thread_id, new_content):
-  """
-  Updates a thread's content in the database.
-
-  Args:
-    thread_id (int): The ID of the thread to update.
-    new_content (str): The new content for the thread.
-  """
-  pass
 
 # Function to get a thread by ID
 def get_thread(thread_id):
@@ -24,13 +14,12 @@ def get_thread(thread_id):
 
 # Function to delete a thread
 def delete_thread(thread_id):
-  """
-  Deletes a thread from the database.
-
-  Args:
-    thread_id (int): The ID of the thread to delete.
-  """
-  pass
+  user_email = g.user_email
+  threads.delete_one({"thread_id": thread_id})
+  users.update_one(
+    {"email": user_email}, 
+    {"$pull": {"threads": {"thread_id": thread_id}}}
+  )
 
 
 ########################### Messages ###########################

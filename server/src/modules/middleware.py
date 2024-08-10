@@ -23,6 +23,7 @@ def register_middlewares(app):
     response.headers['Access-Control-Allow-Headers'] = "Authorization, Content-Type, authorization"
     response.headers['Access-Control-Expose-Headers'] = "Authorization, authorization"
     response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS, POST, PUT, DELETE'
     
     if 'user_email' not in g:
       return response

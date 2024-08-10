@@ -4,19 +4,21 @@ import { useToast } from "@/components/ui/use-toast";
 import * as api from "../controllers/threads";
 import { useRouter } from "next/navigation";
 import {  Message } from "@/models/Thread";
+import { UserThread } from "@/models/User";
+import { useUserContext } from "@/context/UserContext";
 
 export default function useThread(
     setProcessing: (processing: boolean) => void, 
     threadId: string,
     setThreadId: Dispatch<SetStateAction<string>>,
-    dispatch: Dispatch<{ type: 'addMessage' | 'setMessages'; payload: Message | Message[] }>
+    dispatch: Dispatch<{ type: 'addMessage' | 'setMessages'; payload: Message | Message[] }>,
   ) {
   
+  const { threadsDispatch } = useUserContext();
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-
     const loadMessages = async (id: string) => {
       try {
         const messages = await fetchThread(id);
@@ -26,16 +28,14 @@ export default function useThread(
       }
     };
   
-    // Check for threadId in sessionStorage
     const storedThreadId = sessionStorage.getItem("thread_id");
     if (storedThreadId && !threadId) {
       setThreadId(storedThreadId);
       router.push(`/chat/${storedThreadId}`);
       loadMessages(storedThreadId);
     }
-  }, [threadId, setThreadId, dispatch, router]);
+  }, []);
 
-  //todo: check what is wrong
   const clearThread = () => {
     setProcessing(true);
     sessionStorage.removeItem("thread_id");
@@ -50,7 +50,9 @@ export default function useThread(
 
   const createThread = async (message: string) => {
     try {
-      const thread_id = await api.createNewThread(message);
+      const thread = await api.createNewThread(message);    
+      threadsDispatch({ type: 'addThreads', payload: thread });
+      const thread_id = thread.thread_id;  
       setThreadId(thread_id);
       sessionStorage.setItem("thread_id", thread_id);
       router.push(`/chat/${thread_id}`);

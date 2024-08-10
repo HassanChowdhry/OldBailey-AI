@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import ChatHeader, { gptModels } from "@/components/ChatHeader";
 import ChatInput from "@/components/ChatInput";
 import ChatStatus from "@/components/ChatStatus";
@@ -14,9 +14,10 @@ import { useThreadContext } from "@/context/ThreadContext";
 export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
   
-  const { user } = useUserContext();
-  const { first_name, last_name, threads } = user ?? {};
-
+  const { user, threadsState } = useUserContext();
+  const { first_name, last_name } = user ?? {};
+  const { threads } = threadsState;
+  
   const { threadId, setThreadId } = useThreadContext();
   
   const { state, dispatch } = useChat();
@@ -44,7 +45,7 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
       <LeftSheet 
         firstName={first_name!}
         lastName={last_name!}
-        threads={threads ?? []}
+        threads={threads}
         clearThread={clearThread}
         disabled={!threadId}
       />
