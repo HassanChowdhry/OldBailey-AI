@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useContext } from "react";
-import { UserContext } from "@/context/UserContext";
+import { useState } from "react";
+import { useUserContext } from "@/context/UserContext"
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { signup, SignupData  } from "@/controllers/auth";
@@ -21,9 +21,8 @@ import {
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-
-//TODO: add view password, JWT encode password
 const formSchema = z.object({
   first_name: z.string().min(3, { message: "First name is required" }),
   last_name: z.string().min(3, { message: "Last name is required" }),
@@ -38,7 +37,10 @@ const formSchema = z.object({
 export default function SignupForm() {
   const { toast } = useToast();
   const router = useRouter();
-  const { setUser } = useContext(UserContext) ?? {};
+  const { setUser, threadsDispatch } = useUserContext();
+
+  const [passwordVisibility, setPasswordVisibility] = useState<string>('password');
+  const [confirmPasswordVisibility, setconfirmPasswordVisibility] = useState<string>('password');
   
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -71,8 +73,9 @@ export default function SignupForm() {
       return toast({ title: "Something went wrong", variant: "destructive" });
     }
 
-    toast({ title: "Success", description: "Logged in successfully" });
+    toast({ title: "Success", description: "Logged in successfully", variant: "success" });
     setUser(res.user);
+    if (threadsDispatch) threadsDispatch({ type: "setThreads", payload: res.user.threads });
     router.push("/chat");
   };
 
@@ -181,7 +184,12 @@ export default function SignupForm() {
                     <Input 
                       id="password" 
                       placeholder="••••••••••••" 
-                      type="password" 
+                      type={passwordVisibility}
+                      icon={passwordVisibility === 'password' ? (
+                          <FaEye onClick={() => setPasswordVisibility('text')} className="absolute mr-7" /> 
+                        ) :
+                          <FaEyeSlash onClick={() => setPasswordVisibility('password')} className="absolute mr-7" />
+                      }
                       {...field} />
                   </FormControl>
                   <FormMessage />
@@ -201,7 +209,12 @@ export default function SignupForm() {
                     <Input 
                       id="verify_password" 
                       placeholder="••••••••••••" 
-                      type="password" 
+                      type={confirmPasswordVisibility}
+                      icon={confirmPasswordVisibility === 'password' ? (
+                          <FaEye onClick={() => setconfirmPasswordVisibility('text')} className="absolute mr-7" /> 
+                        ) :
+                          <FaEyeSlash onClick={() => setconfirmPasswordVisibility('password')} className="absolute mr-7" />
+                      }
                       {...field} />
                   </FormControl>
                   <FormMessage />

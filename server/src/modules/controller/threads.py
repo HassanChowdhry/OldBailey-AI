@@ -24,10 +24,10 @@ assistant_id = os.getenv("OPENAI_ASSISTANT_ID")
 def post_new_thread():
   user_email = g.user_email
   thread = client.beta.threads.create()
-  content = request.json.get('content')
+  content = request.json.get('content', str(thread.id))
   
   words = content.split()
-  title = ' '.join(words[:6]) if len(words) >= 6 else ' '.join(words)
+  title = ' '.join(words[:5]) if len(words) >= 5 else ' '.join(words)
   
   thread_model = (
     Thread(
@@ -48,12 +48,17 @@ def post_new_thread():
   threads_service.create_thread(thread_model)
   users_service.add_thread_to_user(user_email, user_thread_model)
   
-  return jsonify(thread.id), 201
+  return jsonify(user_thread_model.model_dump()), 201
   
 @threads.route("/threads/<thread_id>", methods=['GET'])
 def get_thread(thread_id):
   messages = threads_service.get_messages_by_thread_id(thread_id)  
   return jsonify(messages), 200
+
+@threads.route("/threads/<thread_id>", methods=['DELETE'])
+def delete_thread(thread_id):
+  threads_service.delete_thread(thread_id)
+  return jsonify({}), 204
 
 @threads.route("/threads/<thread_id>", methods=['POST'])
 def post_message_in_thread(thread_id):

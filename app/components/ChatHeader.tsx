@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Select,
   SelectContent,
@@ -7,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import PFP from '@/components/PFP';
 
 export const gptModels: string[] = [
   "gpt-3.5-turbo",
@@ -29,13 +29,13 @@ const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
       <div className="flex gap-5">
         <Select onValueChange={(e) => {setGptModel(e)}} defaultValue={gptModels[0]}>
           <SelectTrigger 
-            className="border-none w-auto p-2 transition-all duration-500 hover:bg-gray-1/30 text-[16px] text-white-5"
+            className="border-none w-auto p-2 transition-all duration-500 hover:bg-gray-1/30 text-[16px] text-white-2"
           >
             <SelectValue placeholder={gptModels[0]} />
           </SelectTrigger>
 
           <SelectContent 
-            className="text-white-1 border-maroon-3 shadow-md hover:cursor-pointer bg-maroon-2 min-w-[250px] rounded-lg"
+            className="text-white-2 border-maroon-3 shadow-md hover:cursor-pointer bg-maroon-2 min-w-[250px] rounded-lg"
           >
             <SelectGroup>
               {gptModels.map((model) => (
@@ -53,10 +53,7 @@ const ChatHeader = ({ setGptModel }: ChatHeaderProps) => {
       </div>
       
       <div>
-        <Avatar className="hover:cursor-pointer hover:scale-110 hover:shadow-sm transition-all duration-500">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>YOU</AvatarFallback>
-        </Avatar>
+        <PFP />
       </div>
     </section>
   )

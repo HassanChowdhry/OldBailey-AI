@@ -1,10 +1,11 @@
 "use client";
-import { useContext } from "react";
-import { UserContext } from "@/context/UserContext";
+import { useState } from "react";
+import { useUserContext } from "@/context/UserContext"
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { login, LoginData } from "@/controllers/auth";
 import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import {
   LabelInputContainer,
   BottomGradient,
@@ -21,15 +22,15 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-//TODO: add view password, JWT encode password
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(1, { message: "Password is required" }),
 });
 export default function LoginForm() {
+  const { setUser, threadsDispatch } = useUserContext();
   const { toast } = useToast();
   const router = useRouter();
-  const { setUser } = useContext(UserContext) ?? {};
+  const [passwordVisibility, setPasswordVisibility] = useState<string>('password');
   
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -55,8 +56,9 @@ export default function LoginForm() {
       return toast({ title: "Something went wrong", variant: "destructive" });
     }
 
-    toast({ title: "Success", description: "Logged in successfully" });
+    toast({ title: "Success", description: "Logged in successfully", variant: "success" });
     setUser(res.user);
+    if (threadsDispatch) threadsDispatch({ type: 'setThreads', payload: res.user.threads });
     router.push("/chat");
   };
 
@@ -99,9 +101,15 @@ export default function LoginForm() {
                     <Input 
                       id="password" 
                       placeholder="••••••••••••" 
-                      type="password" 
+                      type={passwordVisibility}
+                      icon={passwordVisibility === 'password' ? (
+                          <FaEye onClick={() => setPasswordVisibility('text')} className="absolute mr-7" /> 
+                        ) :
+                          <FaEyeSlash onClick={() => setPasswordVisibility('password')} className="absolute mr-7" />
+                      }
                       {...field} />
                   </FormControl>
+                    
                   <FormMessage />
                 </LabelInputContainer>
               </FormItem>

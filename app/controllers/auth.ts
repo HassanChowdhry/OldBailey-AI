@@ -11,7 +11,7 @@ export type SignupData = {
   phone_number?: number;
 };
 
-const AUTH_BASE_URL = "http://localhost:8000/v1/auth";
+export const AUTH_BASE_URL = "http://localhost:8000/api/v1/auth";
 
 export const login = async (formData: LoginData) => {
   try {

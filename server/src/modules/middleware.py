@@ -1,4 +1,4 @@
-import os, jwt
+import os, jwt, logging
 from dotenv import load_dotenv
 from flask import (
   request,
@@ -12,6 +12,10 @@ load_dotenv()
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 def register_middlewares(app):
+  # @app.before_request
+  # def log_incoming(response: Response):
+  #   pass
+  
   @app.after_request
   def set_tokens(response: Response):
     
@@ -19,6 +23,7 @@ def register_middlewares(app):
     response.headers['Access-Control-Allow-Headers'] = "Authorization, Content-Type, authorization"
     response.headers['Access-Control-Expose-Headers'] = "Authorization, authorization"
     response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS, POST, PUT, DELETE'
     
     if 'user_email' not in g:
       return response
@@ -30,7 +35,7 @@ def register_middlewares(app):
 
   @app.before_request
   def auth_guard():
-    if (request.blueprint == 'auth' and request.url_rule.rule != '/v1/auth/verify') or request.method == 'OPTIONS':
+    if (request.blueprint == 'auth' and request.url_rule.rule != '/api/v1/auth/verify') or request.method == 'OPTIONS':
       return
     
     if "Authorization" not in request.headers:

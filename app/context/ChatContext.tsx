@@ -34,7 +34,7 @@ const ChatContext = createContext<{
   dispatch: React.Dispatch<Action>;
 } | undefined>(undefined);
 
-interface ChatProviderProps {
+type ChatProviderProps = {
   children: ReactNode;
 }
 
@@ -50,7 +50,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
 export function useChat() {
   const context = useContext(ChatContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useChat must be used within a ChatProvider');
   }
   return context;

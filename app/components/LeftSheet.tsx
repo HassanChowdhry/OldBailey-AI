@@ -1,13 +1,17 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarButton, SidebarLink } from "./ui/sidebar";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { IoIosAddCircleOutline, IoMdChatboxes } from "react-icons/io";
+
+import { BsThreeDots } from "react-icons/bs";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { PiChatsLight } from "react-icons/pi";
+
+import { Sidebar, SidebarBody, SidebarButton, SidebarLink } from "@/components/ui/sidebar";
 import { UserThread } from "@/models/User";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { cn } from "@/lib/utils";
+import PFP from '@/components/PFP';
+import { useUserContext } from "@/context/UserContext";
 
 type LeftSheetProps = {
   clearThread: () => void;
@@ -22,11 +26,30 @@ const NewChatButton = {
   icon: <IoIosAddCircleOutline size={22.5} />,
 }
 
-export default function LeftSheet({ clearThread, disabled, firstName, lastName, threads }: LeftSheetProps) {
+export default function LeftSheet({ clearThread, disabled, firstName, lastName }: LeftSheetProps) {
   const [open, setOpen] = useState(false);
   const fullName = `${firstName ?? ""} ${lastName ?? ""}`;
-  const initials = `${firstName ? firstName[0] : ''}${lastName ? lastName[0] : ''}`;
-
+  const [renderedThreads, setRenderedThreads] = useState<JSX.Element[]>([]);
+  const { threadsState, threadsDispatch } = useUserContext();
+  const { threads  } = threadsState;
+  
+  useEffect(() => {
+    setRenderedThreads(
+      threads.toReversed().map((thread, index) => (
+        <SidebarLink
+          key={index}
+          threadId={thread.thread_id}
+          link={{
+            label: thread.title,
+            href: `/chat/${thread.thread_id}`,
+            icon: <PiChatsLight className="h-5 w-5 flex-shrink-0" />,
+            end: <BsThreeDots size={25} className="h-5 w-5 flex-shrink-0" />,
+          }}
+        />
+      ))
+    );
+  }, [threads, threadsDispatch]);
+  
   return (
     <div
       className={cn(
@@ -43,17 +66,7 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName, 
             </div>
 
             <div className="mt-8 flex flex-col gap-2">
-              {threads.map((thread, index) => (
-                  <SidebarLink
-                    key={index}
-                    link={{
-                      label: thread.title,
-                      href: "#",
-                      icon: <IoMdChatboxes className="text-neutral-500 h-5 w-5 flex-shrink-0"/>,
-                      end: <BsThreeDotsVertical className="text-neutral-500 hover:text-white-5 h-5 w-5 flex-shrink-0"/>
-                    }}
-                  />
-                ))}
+              {renderedThreads}
             </div>
 
           </div>
@@ -64,10 +77,7 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName, 
                 label: fullName,
                 href: "#",
                 icon: (
-                  <Avatar className="hover:cursor-pointer h-8 w-8 hover:scale-110 hover:shadow-sm transition-all duration-500">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
+                  <PFP />
                 ),
               }}
             />
@@ -81,13 +91,13 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName, 
 const Logo = () => {
   return (
     <div
-      className="font-normal flex space-x-2 items-center text-sm text-white-1 py-1 relative z-20"
+      className="font-normal h-[35px] flex space-x-2 items-center text-[18px] text-white-1 py-1 relative z-20"
     >
       <div className="h-5 w-6 bg-white-1 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-medium text-white-1 whitespace-pre"
+        className="font-semibold text-white-1 whitespace-pre"
       >
         Old Bailey
       </motion.span>
@@ -97,7 +107,7 @@ const Logo = () => {
 const LogoIcon = () => {
   return (
     <div
-      className="font-normal flex space-x-2 items-center text-sm text-white-1 py-1 relative z-20"
+      className="font-normal h-[35px] flex space-x-2 items-center text-sm text-black-0 py-1 relative z-20"
     >
       <div className="h-5 w-6 bg-white-1 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
     </div>

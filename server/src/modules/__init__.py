@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from flask_cors import CORS
 from .controller import threads, auth
@@ -14,7 +15,7 @@ def create_app():
   )
   
   register_middlewares(app)
-  app.register_blueprint(threads, url_prefix="/v1")
-  app.register_blueprint(auth, url_prefix="/v1")
+  app.register_blueprint(threads, url_prefix="/api/v1")
+  app.register_blueprint(auth, url_prefix="/api/v1")
         
   return app

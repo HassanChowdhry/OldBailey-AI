@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "./ui/button"
 import { IoIosSend } from "react-icons/io";
@@ -8,6 +8,7 @@ type ChatInputProps = {
   disabled: boolean,
 }
 const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const [message, setMessage] = useState<string>("")
 
   return (
@@ -29,12 +30,20 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
             dir="auto"
             rows={1}
             required
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                buttonRef.current?.click();
+              }
+            }}
           />
         </div>
 
         <Button
+          type="submit"
+          ref={buttonRef}
           variant="default"
-          disabled={disabled}
+          disabled={disabled || !message}
           className="rounded-full hover:bg-white-2 text-black-1 disabled:bg-text-white-3 disabled:bg-white-2"
         >
           <IoIosSend size={20} />

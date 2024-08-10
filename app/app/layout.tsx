@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { UserContextProvider } from "@/context/UserContext";
+import { ThreadProvider } from "@/context/ThreadContext";
 import { ChatProvider } from "@/context/ChatContext";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.scss";
@@ -21,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ThreadProvider>
         <UserContextProvider>
         <ChatProvider>
           {children}
           <Toaster />
         </ChatProvider>
         </UserContextProvider>
+        </ThreadProvider>
       </body>
     </html>
   );

@@ -1,10 +1,14 @@
 "use client";
+
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { Button } from "./button";
+import Tip from "@/components/Tip";
+import Options from "@/components/Options";
 
 interface Links {
   href: string;
@@ -164,20 +168,26 @@ export const MobileSidebar = ({
 export const SidebarLink = ({
   link,
   className,
+  threadId,
   ...props
 }: {
   link: Links;
   className?: string;
+  threadId?: string;
   props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
+  const pathname = usePathname();
+  const isActive = pathname === link.href;
+
   return (
-    <div className="flex">
+    <div className="flex max-h-[40px]">
       <Link
         href={link.href}
         className={cn(
           "flex items-center justify-start gap-2 group/sidebar py-2 w-full",
-          className
+          className,
+          isActive ? "text-white-1 font-bold text-[20px] ": "text-white-2 font-normal text-[16px]"
         )}
         {...props}
       >
@@ -188,17 +198,14 @@ export const SidebarLink = ({
             display: animate ? (open ? "inline-block" : "none") : "inline-block",
             opacity: animate ? (open ? 1 : 0) : 1,
           }}
-          className="w-full text-sm group-hover/sidebar:translate-x-2 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+          className="w-full max-w-[170px] truncate overflow-hidden text-sm group-hover/sidebar:translate-x-2 transition duration-3000 whitespace-pre inline-block !p-0 !m-0"
         >
           {link.label ?? "Title"}
         </motion.span>
       </Link>
-    
-        <span className={cn("hover:bg-white-2/20 duration-200 my-auto px-[2px] hover:py-[5px] rounded-2xl cursor-pointer", 
-          open ? "opacity-100" : "opacity-0"
-        )}>
-          {link.end ? link.end : ''}
-        </span>
+
+      <Options open={open} icon={link.end} thisThreadId={threadId} />
+
     </div>
   );
 };
@@ -218,27 +225,33 @@ export const SidebarButton = ({
 }) => {
   const { open, animate } = useSidebar();
   return (
-    <Button
-      className={cn(
-        "disabled:text-white-2 flex items-center justify-start gap-2 group/sidebar py-2 w-full",
-        className,
-      )}
-      variant="outline"
-      onClick={clearThread}
-      disabled={disabled || false}
-      {...props}
-    >
-      {content.icon}
-
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        className="text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-      >
-        {content.label}
-      </motion.span>
-    </Button>
+    <Tip 
+      TipContent="New Chat"
+      TipSide="right"
+      TipTrigger={
+        <Button
+          className={cn(
+            "disabled:text-white-2 flex items-center justify-start gap-2 group/sidebar py-2 w-full",
+            className,
+         )}
+          variant="outline"
+          onClick={clearThread}
+          disabled={disabled || false}
+          {...props}
+        >
+          {content.icon}
+  
+          <motion.span
+            animate={{
+              display: animate ? (open ? "inline-block" : "none") : "inline-block",
+              opacity: animate ? (open ? 1 : 0) : 1,
+            }}
+            className="text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+          >
+            {content.label}
+          </motion.span>
+        </Button>
+      }
+    />
   );
 };

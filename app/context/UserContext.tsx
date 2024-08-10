@@ -1,25 +1,54 @@
 "use client";
-import React, { useState, createContext, ReactNode, useEffect } from "react";
+import React, { useState, createContext, ReactNode, useEffect, useContext, useReducer } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { UserModal } from "@/models/User";
+import { UserModal, UserThread } from "@/models/User";
 import { useToast } from "@/components/ui/use-toast";
+import { AUTH_BASE_URL } from "@/controllers/auth";
 
 type AppProviderProps =  {
   children: ReactNode;
 }
 
-// replce with user modals
+type State = {
+  threads: UserThread[];
+}
+
+type Action = {
+  type: 'addThreads' | 'setThreads' | 'removeThread';
+  payload: UserThread | UserThread[] | string;
+}
+
+const initialState: State = {
+  threads: []
+};
+
 type UserContextType = {
   user: UserModal | null;
   setUser: Function;
+  threadsState: State;
+  threadsDispatch: React.Dispatch<Action>;
 }
 
-export const UserContext = createContext<UserContextType>({ user: {}, setUser: () => {} } as unknown as UserContextType);
+function threadsReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'addThreads':
+      return { ...state, threads: [...state.threads, action.payload as UserThread] };
+    case 'setThreads':
+      return { ...state, threads: action.payload as UserThread[] };
+    case 'removeThread':
+      return { ...state, threads: state.threads.filter(thread => thread.thread_id !== action.payload) };
+    default:
+      throw new Error('Unhandled action type');
+  }
+}
+
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserModal | null>(null);
+  const [threadsState, threadsDispatch] = useReducer(threadsReducer, initialState);
+
   const router = useRouter();
-  const API_BASE_URL = "http://localhost:8000"
   const { toast } = useToast();
   const param = usePathname();
 
@@ -37,7 +66,7 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
     const verifyToken = async () => {
 
       try {
-        const res = await fetch(`${API_BASE_URL}/v1/auth/verify`, { 
+        const res = await fetch(`${AUTH_BASE_URL}/verify`, { 
           method: "POST",
           headers: { 
             'Authorization': `Bearer ${sessionStorage.getItem('token') ?? '' }`
@@ -60,7 +89,10 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
           throw new Error("Invalid data");
         }
 
-        setUser(data.user);
+        const user = data.user;
+        threadsDispatch({ type: "setThreads", payload: user.threads });
+        setUser(user);
+
         if (param === "/" || param === "/signup" || param === "/login") {
           router.push("/chat");
         }
@@ -73,8 +105,17 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
   }, []);
   
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, threadsState, threadsDispatch }}>
       {children}
     </UserContext.Provider>
   );
+}
+
+
+export function useUserContext() {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useThreadContext must be used within a ThreadProvider');
+  }
+  return context;
 }
