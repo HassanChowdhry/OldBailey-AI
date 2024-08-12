@@ -53,7 +53,7 @@ def register():
   phone_number = data.get('phone_number')
   password = data.get('password')
 
-  # prolly dont make phone a required field
+
   if not all([first_name, last_name, email, password]):
     return jsonify({'error': 'Missing required fields'}), 400
   
@@ -61,10 +61,6 @@ def register():
     return jsonify({'error': 'User already exists'}), 400
   
   otp = otp_service.generate_otp()
-  
-  print(otp)
-  
-  print("-" * 100)
   
   otp_service.store_otp(email, otp, {
       'first_name': first_name,
@@ -76,14 +72,14 @@ def register():
   
   otp_service.send_otp_email(email, otp)
   
-  return jsonify({'message': f'OTP {otp} sent successfully'}), 200
+  return jsonify({'message': f'OTP sent to {email} successfully'}), 200
 
 @auth.route('/auth/verify-otp', methods=['POST'])
 def verify_otp():
     data = request.json
     email = data.get('email')
     otp = data.get('otp')
-
+    
     if not all([email, otp]):
       return jsonify({'error': 'Missing email or OTP'}), 400
 
@@ -130,27 +126,10 @@ def resend_otp():
     
     if otp_service.update_otp(email, new_otp):
         otp_service.send_otp_email(email, new_otp)
-        return jsonify({'message': f'OTP {new_otp} resent successfully'}), 200
+        return jsonify({'message': f'OTP resent to {email} successfully'}), 200
     else:
         return jsonify({'error': 'Failed to update OTP'}), 400
   
-  # user = users_service.create_user(
-  #   first_name, 
-  #   last_name, 
-  #   email, 
-  #   phone_number, 
-  #   password
-  # )
-  
-  # response = make_response(jsonify({
-  #   'user': user.model_dump()
-  # }), 201)
-  
-  # g.user_email = email
-  # refresh_token = auth_service.create_token(email, days=3)
-  # response.set_cookie('refresh_token', refresh_token, httponly=True, samesite=None, secure=True)
-  
-  # return response
 
 # Move to a different controller or middleware
 @auth.route('/auth/verify', methods=['POST'])

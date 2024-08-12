@@ -19,9 +19,10 @@ def store_otp(email, otp, user_data):
 def verify_otp(email, otp):
     key = f"otp:{email}"
     stored_data = redis_client.get(key)
+
     if stored_data:
         data = json.loads(stored_data)
-        return data['otp'] == otp
+        return int(data['otp']) == int(otp)
     return False
 
 def get_user_data(email):
