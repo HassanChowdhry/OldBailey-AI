@@ -65,18 +65,15 @@ export default function SignupForm() {
 
     const res = await signup(data);
     
-    if (!res) {
-      return toast({ title: "Error", variant: "destructive" });
+    if (!res || res.error) {
+      return toast({ title: "Error", description: res.error, variant: "destructive" });
     }
 
-    if (!res.user || !setUser) {
-      return toast({ title: "Something went wrong", variant: "destructive" });
+    if (res && res.message) {
+      toast({ title: "Please Verify OTP", description: res.message });
     }
-
-    toast({ title: "Success", description: "Logged in successfully", variant: "success" });
-    setUser(res.user);
-    if (threadsDispatch) threadsDispatch({ type: "setThreads", payload: res.user.threads });
-    router.push("/chat");
+    
+    router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
   };
 
   return (

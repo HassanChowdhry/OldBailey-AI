@@ -2,7 +2,7 @@ import Markdown from 'react-markdown'
 import { FaBold } from "react-icons/fa";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from 'rehype-highlight';
-import PFP from '@/components/PFP';
+import PFP from '@/components/Pfp';
 
 import "./ChatMessage.scss";
 import 'highlight.js/styles/obsidian.css';  

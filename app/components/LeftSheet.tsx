@@ -10,7 +10,7 @@ import { PiChatsLight } from "react-icons/pi";
 import { Sidebar, SidebarBody, SidebarButton, SidebarLink } from "@/components/ui/sidebar";
 import { UserThread } from "@/models/User";
 import { cn } from "@/lib/utils";
-import PFP from '@/components/PFP';
+import PFP from '@/components/Pfp';
 import { useUserContext } from "@/context/UserContext";
 
 type LeftSheetProps = {
@@ -89,6 +89,7 @@ export default function LeftSheet({ clearThread, disabled, firstName, lastName }
 }
 
 const Logo = () => {
+  // put a pin next to this
   return (
     <div
       className="font-normal h-[35px] flex space-x-2 items-center text-[18px] text-white-1 py-1 relative z-20"

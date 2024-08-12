@@ -25,7 +25,7 @@ export const login = async (formData: LoginData) => {
     });
 
     if (!res.ok) {
-      return { error: "Something went wrong" };
+      return res.json();
     }
 
     const token = res.headers.get('Authorization');
@@ -48,13 +48,49 @@ export const signup = async (formData: SignupData) => {
       body: JSON.stringify(formData),
       credentials: "include",
     });
+    
+    return res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const verify_otp = async (email:string, otp: number) => {
+  if (!email || !otp) return { error: "Invalid data" };
+  try {
+    const res = await fetch(`${AUTH_BASE_URL}/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email, otp}),
+      credentials: "include",
+    });
 
     if (!res.ok) {
-      return { error: "Something went wrong" };
+      return res.json();
     }
     
     const token = res.headers.get("Authorization");
     if (token) sessionStorage.setItem("token", token);
+    
+    return res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const resend_otp = async (email:string) => {
+  if (!email) return { error: "Invalid data" };
+  try {
+    const res = await fetch(`${AUTH_BASE_URL}/resend-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email}),
+      credentials: "include",
+    });
     
     return res.json();
   } catch (error) {

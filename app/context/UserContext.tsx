@@ -55,7 +55,7 @@ export const UserContextProvider: React.FC<AppProviderProps> = ({ children }) =>
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {
-      if (param !== "/" && param !== "/signup" && param !== "/login") {
+      if (param !== "/" && param !== "/signup" && param !== "/login" && param !== "/verify-email") {
         router.push("/");
         toast({ title: "Please Login to continue", variant: "destructive" });
       }
