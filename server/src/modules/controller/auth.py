@@ -7,12 +7,12 @@ from flask import (
 )
 import modules.services.users as users_service
 import modules.services.auth as auth_service
+import modules.services.otp as otp_service
 
 auth = Blueprint('auth', __name__)
 
 # TODO: 
 # Add Password Reset
-# Add Email Verification
 # Add password encryption from the frontend to the backend using jwt
 
 @auth.route('/auth/login', methods=['POST'])
@@ -59,24 +59,98 @@ def register():
   
   if users_service.find_user_by_email(email):
     return jsonify({'error': 'User already exists'}), 400
+  
+  otp = otp_service.generate_otp()
+  
+  print(otp)
+  
+  print("-" * 100)
+  
+  otp_service.store_otp(email, otp, {
+      'first_name': first_name,
+      'last_name': last_name,
+      'email': email,
+      'phone_number': phone_number,
+      'password': password
+  })
+  
+  otp_service.send_otp_email(email, otp)
+  
+  return jsonify({'message': f'OTP {otp} sent successfully'}), 200
+
+@auth.route('/auth/verify-otp', methods=['POST'])
+def verify_otp():
+    data = request.json
+    email = data.get('email')
+    otp = data.get('otp')
+
+    if not all([email, otp]):
+      return jsonify({'error': 'Missing email or OTP'}), 400
+
+    if not otp_service.verify_otp(email, otp):
+      return jsonify({'error': 'Wrong OTP entered try again'}), 400
+
+    user_data = otp_service.get_user_data(email)
     
-  user = users_service.create_user(
-    first_name, 
-    last_name, 
-    email, 
-    phone_number, 
-    password
-  )
+    if not user_data:
+        return jsonify({'error': 'User data not found'}), 400
+
+    user = users_service.create_user(
+        user_data['first_name'],
+        user_data['last_name'],
+        user_data['email'],
+        user_data['phone_number'],
+        user_data['password'],
+    )
+
+    otp_service.clear_otp(email)
+
+    response = make_response(jsonify({
+        'user': user.model_dump()
+    }), 201)
+
+    g.user_email = email
+    refresh_token = auth_service.create_token(email, days=3)
+    response.set_cookie('refresh_token', refresh_token, httponly=True, samesite=None, secure=True)
+
+    return response
   
-  response = make_response(jsonify({
-    'user': user.model_dump()
-  }), 201)
+@auth.route('/auth/resend-otp', methods=['POST'])
+def resend_otp():
+    data = request.json
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'error': 'Missing email'}), 400
+
+    if not otp_service.otp_exists(email):
+        return jsonify({'error': 'No pending signup for this email'}), 400
+
+    new_otp = otp_service.generate_otp()
+    
+    if otp_service.update_otp(email, new_otp):
+        otp_service.send_otp_email(email, new_otp)
+        return jsonify({'message': f'OTP {new_otp} resent successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update OTP'}), 400
   
-  g.user_email = email
-  refresh_token = auth_service.create_token(email, days=3)
-  response.set_cookie('refresh_token', refresh_token, httponly=True, samesite=None, secure=True)
+  # user = users_service.create_user(
+  #   first_name, 
+  #   last_name, 
+  #   email, 
+  #   phone_number, 
+  #   password
+  # )
   
-  return response
+  # response = make_response(jsonify({
+  #   'user': user.model_dump()
+  # }), 201)
+  
+  # g.user_email = email
+  # refresh_token = auth_service.create_token(email, days=3)
+  # response.set_cookie('refresh_token', refresh_token, httponly=True, samesite=None, secure=True)
+  
+  # return response
 
 # Move to a different controller or middleware
 @auth.route('/auth/verify', methods=['POST'])

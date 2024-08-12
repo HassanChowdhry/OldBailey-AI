@@ -28,7 +28,7 @@ def register_middlewares(app):
     if 'user_email' not in g:
       return response
 
-    access_token = auth_service.create_token(g.user_email, minutes=15)
+    access_token = auth_service.create_token(g.user_email, minutes=45)
     response.headers['Authorization'] = access_token
 
     return response
