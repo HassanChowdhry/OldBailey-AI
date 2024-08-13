@@ -54,6 +54,7 @@ def update_otp(email, new_otp):
 
 # TODO: Update this
 def send_otp_email(email, otp):
+    print(f'OTP {otp} sent to {email}')
     SENDER = "mohammedchowdhry11@gmail.com"
 
     RECIPIENT = email
