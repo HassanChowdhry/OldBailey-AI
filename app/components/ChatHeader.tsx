@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import PFP from '@/components/PFP';
+import PFP from '@/components/Pfp';
 
 export const gptModels: string[] = [
   "gpt-3.5-turbo",

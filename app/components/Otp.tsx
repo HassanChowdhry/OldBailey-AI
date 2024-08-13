@@ -4,15 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  BottomGradient
 } from "@/components/ui/form"
 import {
   InputOTP,
@@ -20,7 +19,6 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from "@/components/ui/input-otp"
-import { toast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
@@ -28,7 +26,7 @@ const FormSchema = z.object({
   }),
 })
 
-export function InputOTPForm() {
+export function InputOTPForm({ onSubmit }: { onSubmit: (otp: string) => void }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -36,26 +34,19 @@ export function InputOTPForm() {
     },
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+  function handleSubmit(data: z.infer<typeof FormSchema>) {
+    onSubmit(data.pin);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="w-2/3 space-y-6 text-white-1">
         <FormField
           control={form.control}
           name="pin"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>One-Time Password</FormLabel>
+              <FormLabel className="font-semibold text-md" >One-Time Password</FormLabel>
               <FormControl>
                 <InputOTP maxLength={6} {...field}>
                   <InputOTPGroup>
@@ -73,15 +64,18 @@ export function InputOTPForm() {
                   </InputOTPGroup>
                 </InputOTP>
               </FormControl>
-              <FormDescription>
-                Please enter the one-time password sent to your phone.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit">Submit</Button>
+          <button
+            className="relative bg-gradient-to-br group/btn from-zinc-900 to-zinc-900 block bg-zinc-800 w-full text-white-1 rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+            type="submit"
+          >
+            Verify OTP &rarr;
+            <BottomGradient />
+          </button>
       </form>
     </Form>
   )
