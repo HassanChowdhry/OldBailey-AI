@@ -12,3 +12,6 @@ PyJWT==2.8.0
 pydantic==2.8.2
 Flask-PyMongo
 bcrypt
+flask_cors
+boto3
+redis
