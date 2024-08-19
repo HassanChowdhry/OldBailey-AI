@@ -52,14 +52,13 @@ def update_otp(email, new_otp):
         return True
     return False
 
-# TODO: Update this
 def send_otp_email(email, otp):
     print(f'OTP {otp} sent to {email}')
-    SENDER = "mohammedchowdhry11@gmail.com"
+    SENDER = "oldbailey@hassanchowdhry.live"
 
     RECIPIENT = email
 
-    SUBJECT = "Amazon SES Test (SDK for Python)"
+    SUBJECT = "Your One-Time Password (OTP) for OldBaileyAI"
 
     # The email body for recipients with non-HTML email clients.
     BODY_TEXT = ("Amazon SES Test (Python)\r\n"
@@ -67,17 +66,25 @@ def send_otp_email(email, otp):
                 "This email was sent with Amazon SES using the "
                 "AWS SDK for Python (Boto)."
                 )
+
+    BODY_HTML = f"""
+    <html>
+        <head></head>
+        <body>
+            <p>Dear {email},</p>
+            <p>
+                <p><strong>Your One-Time Password (OTP) for logging into OldBaileyAI is : <em>{otp}</em> \r\n</strong></p>
                 
-    BODY_HTML = f"""<html>
-    <head></head>
-    <body>
-    <h1>Amazon SES Test (SDK for Python)</h1>
-    <p>This email was sent with
-        <strong>Your OTP is: <em>{otp}</em> \r\n</strong>
-        <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
-        <a href='https://aws.amazon.com/sdk-for-python/'>
-        AWS SDK for Python (Boto)</a>.</p>
-    </body>
+                <p>Please enter this code on the website to verify your email address and complete the login process. This OTP is valid for the next 10 minutes.</p>
+
+                <p>If you did not request this, please ignore this email.</p>
+                
+                <p>
+                    Thank you,
+                    Hassan
+                </p>
+            </p>
+        </body>
     </html>
                 """            
     CHARSET = "UTF-8"

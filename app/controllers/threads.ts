@@ -1,6 +1,8 @@
 import { Message } from "@/models/Thread"
 
-const THREADS_BASE_URL = "http://localhost:8000/api/v1"
+
+const THREADS_BASE_URL = "http://ec2-3-97-10-234.ca-central-1.compute.amazonaws.com:8000/api/v1"
+// const THREADS_BASE_URL = "http://localhost:8000/api/v1"
 
 export const createNewThread = async (message: string) => {
 
