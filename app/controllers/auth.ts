@@ -11,7 +11,7 @@ export type SignupData = {
   phone_number?: number;
 };
 
-export const AUTH_BASE_URL = "http://ec2-3-97-10-234.ca-central-1.compute.amazonaws.com:8000/api/v1/auth"
+export const AUTH_BASE_URL = "https://api.ob.hassanchowdhry.live/api/v1/auth"
 // export const AUTH_BASE_URL = "http://localhost:8000/api/v1/auth";
 
 export const login = async (formData: LoginData) => {
